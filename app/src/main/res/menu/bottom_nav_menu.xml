@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@drawable/ic_home"/>
+    <item
+        android:id="@+id/nav_events"
+        android:title="Events"
+        android:icon="@drawable/ic_calendar"/>
+    <item
+        android:id="@+id/nav_add"
+        android:title="Add"
+        android:icon="@drawable/ic_party"/>
+    <item
+        android:id="@+id/nav_messages"
+        android:title="Messages"
+        android:icon="@drawable/ic_message"/>
+    <item
+        android:id="@+id/nav_profile"
+        android:title="Profile"
+        android:icon="@drawable/ic_profile"/>
+</menu>
