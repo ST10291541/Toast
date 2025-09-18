@@ -1,0 +1,121 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- App Logo -->
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/toast"
+            android:contentDescription="App Logo"
+            android:layout_marginTop="40dp" />
+
+        <!-- Login Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_marginTop="16dp" />
+
+        <!-- Face ID Icon -->
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_face"
+            android:layout_marginTop="32dp"
+            android:contentDescription="Face ID Icon" />
+
+        <!-- Face ID Label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log in with your Face ID"
+            android:textSize="14sp"
+            android:textColor="#555555"
+            android:layout_marginTop="8dp" />
+
+        <!-- Divider with Or -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#DDDDDD"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Or"
+                android:textColor="#555555"
+                android:padding="8dp"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#DDDDDD"/>
+        </LinearLayout>
+
+        <!-- Google Sign In Button (fake for now) -->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sign in with Google"
+            android:textAllCaps="false"
+            android:drawableLeft="@drawable/ic_google"
+            android:backgroundTint="@android:color/white"
+            android:textColor="#000000"
+            android:layout_marginBottom="16dp"
+            android:padding="12dp"
+            android:stateListAnimator="@null"
+
+            android:elevation="2dp"/>
+
+        <!-- Sign Up Text -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Don’t have account? Sign Up"
+            android:textColor="#0000EE"
+            android:layout_marginTop="8dp" />
+
+        <!-- Done Button -->
+        <Button
+            android:id="@+id/btnDone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Done"
+            android:textAllCaps="false"
+            android:backgroundTint="#C4A600"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="32dp"
+            android:padding="12dp"/>
+
+        <!-- Cancel Text -->
+        <TextView
+            android:id="@+id/tvCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="#333333"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</ScrollView>

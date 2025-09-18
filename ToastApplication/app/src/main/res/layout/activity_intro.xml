@@ -1,0 +1,122 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Image Grid -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:rowCount="2"
+            android:alignmentMode="alignMargins"
+            android:useDefaultMargins="true">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/event1" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/event2" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/event3" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/event1" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/event2" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_columnWeight="1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/event3" />
+        </GridLayout>
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Plan, Manage and Host\nEvents"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#2C2C2C" />
+
+        <!-- Subtitle -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Create private event spaces, send invites,\nchat in real time, and share memories all in one place."
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:textColor="#555555" />
+
+        <!-- Indicator (fake dots for now) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <View
+                android:layout_width="16dp"
+                android:layout_height="4dp"
+                android:background="@drawable/indicator_selected"
+                android:layout_marginEnd="4dp"/>
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="4dp"
+                android:background="@drawable/indicator_unselected"
+                android:layout_marginEnd="4dp"/>
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="4dp"
+                android:background="@drawable/indicator_unselected"/>
+        </LinearLayout>
+
+        <!-- Next Button -->
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Next"
+            android:backgroundTint="#666666"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+</ScrollView>
