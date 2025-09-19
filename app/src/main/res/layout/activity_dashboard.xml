@@ -163,7 +163,7 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@android:color/holo_green_dark"
+                        android:backgroundTint="@android:color/holo_blue_bright"
                         android:text="Going"
                         android:textColor="@android:color/white"/>
 
