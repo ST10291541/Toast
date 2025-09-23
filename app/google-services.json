@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "500559417208",
+    "project_id": "toast-95f0a",
+    "storage_bucket": "toast-95f0a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:500559417208:android:3d982c3cd992611fd7c28d",
+        "android_client_info": {
+          "package_name": "vcmsa.projects.toastapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeE9JkMnOA16YX0o95xxOaXzagvckUlSA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
