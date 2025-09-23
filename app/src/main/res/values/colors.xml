@@ -3,5 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="mustard_yellow">#FFB300</color>
+    <color name="gold">#D1C100</color>
 
 </resources>
