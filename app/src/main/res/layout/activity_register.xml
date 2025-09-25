@@ -46,37 +46,39 @@
                 android:contentDescription="Add Photo" />
         </LinearLayout>
 
-        <!-- Google Sign In -->
-        <Button
-            android:id="@+id/btnGoogleSignIn"
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btnGoogle"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:drawableLeft="@drawable/ic_google"
-            android:text="Sign in with Google"
-            android:textAllCaps="false"
-            android:background="@drawable/btn_google"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="20dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
 
-        <!-- Full Name -->
-        <EditText
-            android:id="@+id/etFullName"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Full Name"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:layout_marginBottom="12dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp">
 
-        <!-- Username -->
-        <EditText
-            android:id="@+id/etUsername"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Username"
-            android:background="@drawable/edittext_bg"
-            android:padding="12dp"
-            android:layout_marginBottom="12dp" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#DDDDDD"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Or"
+                android:textColor="#555555"
+                android:padding="8dp"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#DDDDDD"/>
+        </LinearLayout>
 
         <!-- Email -->
         <EditText
@@ -100,33 +102,6 @@
             android:padding="12dp"
             android:drawableEnd="@drawable/ic_visibility_off"
             android:layout_marginBottom="12dp" />
-
-        <!-- Phone with flag -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal"
-            android:background="@drawable/edittext_bg"
-            android:gravity="center_vertical"
-            android:padding="8dp"
-            android:layout_marginBottom="24dp">
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-
-                android:contentDescription="Country flag"
-                android:layout_marginRight="8dp"/>
-
-            <EditText
-                android:id="@+id/etPhone"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:hint="Your number"
-                android:inputType="phone" />
-        </LinearLayout>
 
         <!-- Done Button -->
         <Button

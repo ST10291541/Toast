@@ -12,7 +12,20 @@
           "package_name": "vcmsa.projects.toastapplication"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "500559417208-9e0pq8ine2p4hg9ljm20it71abjdgngf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "vcmsa.projects.toastapplication",
+            "certificate_hash": "2d9e231809d1504349796a0b6407dca1d41df12d"
+          }
+        },
+        {
+          "client_id": "500559417208-sbdr95e2lv9c1oshfokmmpbbuqj5mqcp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCeE9JkMnOA16YX0o95xxOaXzagvckUlSA"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "500559417208-sbdr95e2lv9c1oshfokmmpbbuqj5mqcp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

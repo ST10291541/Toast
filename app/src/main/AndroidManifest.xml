@@ -2,36 +2,40 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
+
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/toast_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/toast_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.ToastApplication">
-
-        <!-- Login Screen -->
-        <activity android:name=".LoginActivity" />
-
-        <!-- Intro Screen -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="false" /> <!-- Login Screen -->
+        <activity android:name=".LoginActivity" /> <!-- Intro Screen -->
         <activity
             android:name=".IntroActivity"
-            android:exported="false" />
-
-        <!-- Splash Screen is the launcher -->
+            android:exported="false" /> <!-- Splash Screen is the launcher -->
         <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Toast.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".MainActivity" />
-
     </application>
-
 
 </manifest>
