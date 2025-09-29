@@ -91,6 +91,14 @@
             android:padding="12dp"
             android:layout_marginBottom="12dp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*Password must be between 6 and 12 characters, includes a special character, uppercase, lowercase and numeric value"
+            android:textColor="#FF0000"
+            android:textSize="6pt"
+            android:padding="8dp"/>
+
         <!-- Password -->
         <EditText
             android:id="@+id/etPassword"
