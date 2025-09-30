@@ -16,6 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ToastApplication">
         <activity
+            android:name=".MyEventsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EventDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
