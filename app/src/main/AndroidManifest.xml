@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ToastApplication">
         <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".MyEventsActivity"
             android:exported="false" />
         <activity
