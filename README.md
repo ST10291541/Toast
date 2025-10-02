@@ -87,16 +87,15 @@ The app will be published on the Google Play Store for public download.
 ---
 
 ## 7: GitHub Link
-
-**App Repository:** [https://github.com/ST10291541/Toast.git]
+[App Repository](https://github.com/ST10291541/Technovate)
 
 ---
 
 ## 8: References
 
-* How do REST APIs communicate with databases?: [https://moldstud.com/articles/p-how-do-rest-apis-communicate-with-databases]
-* Integrating Restful Apis With Frontend: [https://frontenddeveloper.io/insight/integrating-restful-apis-with-frontend/]
-* Web Services: [https://render.com/docs/web-services]
-* Render Documentation: [https://render.com](https://render.com)
-* Firebase Documentation: [https://firebase.google.com](https://firebase.google.com)
-* Android Developers Documentation: [https://developer.android.com](https://developer.android.com)
+* How do REST APIs communicate with databases?: (https://moldstud.com/articles/p-how-do-rest-apis-communicate-with-databases)
+* Integrating Restful Apis With Frontend: (https://frontenddeveloper.io/insight/integrating-restful-apis-with-frontend/)
+* Web Services: (https://render.com/docs/web-services)
+* Render Documentation: (https://render.com)
+* Firebase Documentation: (https://firebase.google.com)
+* Android Developers Documentation: (https://developer.android.com)
