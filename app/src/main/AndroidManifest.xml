@@ -37,6 +37,9 @@
         <activity
             android:name=".IntroActivity"
             android:exported="false" /> <!-- Splash Screen is the launcher -->
+
+
+
         <activity
             android:name=".SplashActivity"
             android:exported="true"
