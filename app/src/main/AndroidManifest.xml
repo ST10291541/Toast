@@ -16,10 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ToastApplication">
         <activity
-            android:name=".ResetPasswordActivity"
+            android:name=".CreateEventActivity"
             android:exported="false" />
-
-        <activity android:name=".CreateEventActivity"
+        <activity
+            android:name=".ResetPasswordActivity"
             android:exported="false" />
         <activity
             android:name=".MyEventsActivity"
@@ -40,9 +40,6 @@
         <activity
             android:name=".IntroActivity"
             android:exported="false" /> <!-- Splash Screen is the launcher -->
-
-
-
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -55,7 +52,5 @@
         </activity>
         <activity android:name=".MainActivity" />
     </application>
-
-
 
 </manifest>

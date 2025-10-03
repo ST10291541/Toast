@@ -1,20 +1,159 @@
 package vcmsa.projects.toastapplication
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.bumptech.glide.Glide
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import vcmsa.projects.toastapplication.network.RetrofitClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class EventDetailsActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
+    private lateinit var eventImage: ImageView
+    private lateinit var eventTitle: TextView
+    private lateinit var countdownTimer: TextView
+    private lateinit var goingCount: TextView
+    private lateinit var eventDate: TextView
+    private lateinit var eventLocation: TextView
+    private lateinit var organizerName: TextView
+    private lateinit var aboutDescription: TextView
+    private lateinit var dietarySpinner: AutoCompleteTextView
+    private lateinit var songInput: TextInputEditText
+    private lateinit var btnGoogleDrive: Button
+    private lateinit var btnGoing: Button
+    private lateinit var btnNotGoing: Button
+    private lateinit var btnConfirmedGoing: Button
+
+    private lateinit var event: Event
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_event_details)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        auth = FirebaseAuth.getInstance()
+
+        // Initialize views
+        initViews()
+
+        // Get event object passed via intent
+        event = intent.getSerializableExtra("event") as? Event
+            ?: return finish() // close if no event
+
+        bindEventData()
+
+        setupRSVPButtons()
+        setupGoogleDriveButton()
+    }
+
+    private fun initViews() {
+        eventImage = findViewById(R.id.eventImage)
+        eventTitle = findViewById(R.id.eventTitle)
+        countdownTimer = findViewById(R.id.countdownTimer)
+        goingCount = findViewById(R.id.goingCount)
+        eventDate = findViewById(R.id.eventDate)
+        eventLocation = findViewById(R.id.eventLocation)
+        aboutDescription = findViewById(R.id.aboutDescription)
+        dietarySpinner = findViewById(R.id.dietarySpinner)
+        songInput = findViewById(R.id.songInput)
+        btnGoogleDrive = findViewById(R.id.btnGoogleDrive)
+        btnGoing = findViewById(R.id.btnGoing)
+        btnNotGoing = findViewById(R.id.btnNotGoing)
+        btnConfirmedGoing = findViewById(R.id.btnConfirmedGoing)
+    }
+
+    private fun bindEventData() {
+        eventTitle.text = event.title
+        aboutDescription.text = event.description
+        eventDate.text = "${event.date} • ${event.time}"
+        eventLocation.text = event.location
+        goingCount.text = "🎉 +${event.attendeeCount} people are going"
+
+        // Load event image if you have a URL, else keep default
+        Glide.with(this)
+            .load(event.googleDriveLink) // or any image URL
+            .placeholder(R.drawable.event3)
+            .into(eventImage)
+
+        // Populate dietary spinner
+        val dietaryAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            event.dietaryRequirements
+        )
+        dietarySpinner.setAdapter(dietaryAdapter)
+    }
+
+    private fun setupRSVPButtons() {
+        btnGoing.setOnClickListener {
+            updateRSVP("going")
+        }
+
+        btnNotGoing.setOnClickListener {
+            updateRSVP("notGoing")
+        }
+    }
+
+    private fun updateRSVP(status: String) {
+        val user = auth.currentUser ?: return
+        user.getIdToken(true).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result?.token ?: return@addOnCompleteListener
+                val authHeader = "Bearer $token"
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val response = RetrofitClient.api.rsvpEvent(authHeader, event.id!!, status)
+                        runOnUiThread {
+                            if (response.isSuccessful) {
+                                Toast.makeText(
+                                    this@EventDetailsActivity,
+                                    "RSVP updated: $status",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                btnConfirmedGoing.visibility = if (status == "going") Button.VISIBLE else Button.GONE
+                                btnGoing.visibility = if (status == "going") Button.GONE else Button.VISIBLE
+                                btnNotGoing.visibility = if (status == "notGoing") Button.GONE else Button.VISIBLE
+                            } else {
+                                Toast.makeText(
+                                    this@EventDetailsActivity,
+                                    "Failed to update RSVP",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@EventDetailsActivity,
+                                "Network error: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Authentication failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupGoogleDriveButton() {
+        btnGoogleDrive.setOnClickListener {
+            val link = event.googleDriveLink
+            if (link.isNotEmpty()) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "No Google Drive link available", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

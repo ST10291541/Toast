@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
     <LinearLayout
+        android:id="@+id/contentLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -52,7 +51,7 @@
             android:padding="16dp"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Event Category (Dropdown) -->
+        <!-- Event Category -->
         <Spinner
             android:id="@+id/eventCategory"
             android:layout_width="match_parent"
@@ -82,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:text="Today"
                 android:backgroundTint="@color/black"
-                />
+                android:textColor="@android:color/white"/>
 
             <Button
                 android:id="@+id/btnTomorrow"
@@ -90,26 +89,40 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="Tomorrow"
-                android:backgroundTint="@color/black" />
+                android:backgroundTint="@color/black"
+                android:textColor="@android:color/white"/>
 
             <Button
                 android:id="@+id/btnThisWeek"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="This week"
-                android:backgroundTint="@color/black"/>
+                android:text="This Week"
+                android:backgroundTint="@color/black"
+                android:textColor="@android:color/white"/>
         </LinearLayout>
 
-        <!-- Calendar Picker -->
+        <!-- Date Picker -->
         <Button
             android:id="@+id/btnPickDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Choose from calendar"
+            android:text="Pick Date"
             android:drawableLeft="@drawable/ic_calendar"
             android:backgroundTint="@color/black"
-            android:layout_marginBottom="16dp" />
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Time Picker -->
+        <Button
+            android:id="@+id/btnPickTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pick Time"
+            android:drawableLeft="@drawable/ic_time"
+            android:backgroundTint="@color/black"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="16dp"/>
 
         <!-- Location -->
         <TextView
@@ -127,17 +140,14 @@
             android:background="@drawable/edittext_bg"
             android:layout_marginBottom="16dp">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_location" />
-
-            <TextView
-                android:id="@+id/locationText"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/eventLocation"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="13 Westville Road, KZN"
-                android:layout_marginStart="8dp" />
+                android:hint="Enter Location"
+                android:background="@drawable/edittext_bg"
+                android:drawableLeft="@drawable/ic_location"
+                android:padding="16dp"/>
         </LinearLayout>
 
         <!-- Dietary Specifications -->

@@ -98,9 +98,9 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
                     android:textColor="#FFC107"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                tools:text="ACTIVE (12 RSVP)" />
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    tools:text="ACTIVE (12 RSVP)" />
 
                 <View
                     android:layout_width="0dp"

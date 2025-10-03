@@ -6,13 +6,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
-import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
