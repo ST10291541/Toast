@@ -1,18 +1,15 @@
 package vcmsa.projects.toastapplication
 
 data class Event(
-    val id: String? = null, // Firestore doc ID
+    var id: String = "",
     val title: String = "",
+    val description: String = "",
     val date: String = "",
     val time: String = "",
     val location: String = "",
-    val description: String = "",
-    val category: String = "General",
-    val dietaryRequirements: List<String> = emptyList(),
-    val musicSuggestions: List<String> = emptyList(),
+    val creatorId: String = "",
+    val attendeeCount: Int = 0,
     val googleDriveLink: String = "",
-    val hostUserId: String? = null,
-    val hostEmail: String? = null,
-    val createdAt: String? = null,
-    val attendeeCount: Int = 0
-)
+    val dietaryRequirements: List<String> = emptyList()
+) : java.io.Serializable
+

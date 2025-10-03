@@ -411,14 +411,13 @@
                     android:textColor="@android:color/white" />
 
                 <Button
-                    android:id="@+id/btnConfirmedGoing"
+                    android:id="@+id/btnMaybe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="🎉 Going"
-                    android:backgroundTint="@color/going_green"
+                    android:text="Maybe"
+                    android:backgroundTint="@color/gray"
                     android:textColor="@android:color/white"
-                    android:visibility="gone"
-                    tools:visibility="gone" />
+                    android:layout_marginEnd="8dp"/>
             </LinearLayout>
 
         </LinearLayout>

@@ -119,6 +119,18 @@
                     android:contentDescription="Edit event"
                     app:tint="#007AFF" /> <!-- Blue Tint -->
 
+                <ImageView
+                    android:id="@+id/shareButton"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_share"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Share event"
+                    app:tint="#007AFF"
+                    android:layout_marginStart="8dp"/>
+
             </LinearLayout>
 
         </LinearLayout>

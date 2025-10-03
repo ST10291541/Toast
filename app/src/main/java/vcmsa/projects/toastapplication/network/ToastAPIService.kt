@@ -4,6 +4,7 @@ import retrofit2.Response
 import retrofit2.http.*
 import vcmsa.projects.toastapplication.CreateEventRequest
 import vcmsa.projects.toastapplication.Event
+import vcmsa.projects.toastapplication.RsvpResponse
 
 interface ToastApiService {
 
@@ -43,6 +44,6 @@ interface ToastApiService {
     suspend fun rsvpEvent(
         @Header("Authorization") token: String,
         @Path("id") id: String,
-        @Body status: String
+        @Body rsvp: RsvpResponse
     ): Response<Event>
 }

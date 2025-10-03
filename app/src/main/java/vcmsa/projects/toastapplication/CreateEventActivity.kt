@@ -124,23 +124,23 @@ class CreateEventActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            createEvent(
-                Event(
-                    title = title,
-                    description = description,
-                    category = category,
-                    location = location,
-                    dietaryRequirements = dietary,
-                    musicSuggestions = musicPoll,
-                    googleDriveLink = googleDriveLink,
-                    date = selectedDate ?: "",
-                    time = selectedTime ?: ""
-                )
+            val request = CreateEventRequest(
+                title = title,
+                date = selectedDate!!,
+                time = selectedTime!!,
+                location = location,
+                description = description,
+                category = category,
+                dietaryRequirements = dietary,
+                musicSuggestions = musicPoll,
+                googleDriveLink = googleDriveLink
             )
+
+            createEvent(request)
         }
     }
 
-    private fun createEvent(event: Event) {
+    private fun createEvent(event: CreateEventRequest) {
         // Build the request object from your Event
         val request = CreateEventRequest(
             title = event.title,

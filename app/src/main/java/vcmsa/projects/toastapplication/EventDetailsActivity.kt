@@ -12,6 +12,7 @@ import vcmsa.projects.toastapplication.network.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import vcmsa.projects.toastapplication.RsvpResponse
 
 class EventDetailsActivity : AppCompatActivity() {
 
@@ -33,6 +34,8 @@ class EventDetailsActivity : AppCompatActivity() {
     private lateinit var btnConfirmedGoing: Button
 
     private lateinit var event: Event
+    private lateinit var btnMaybe: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +69,7 @@ class EventDetailsActivity : AppCompatActivity() {
         btnGoogleDrive = findViewById(R.id.btnGoogleDrive)
         btnGoing = findViewById(R.id.btnGoing)
         btnNotGoing = findViewById(R.id.btnNotGoing)
-        btnConfirmedGoing = findViewById(R.id.btnConfirmedGoing)
+        btnMaybe = findViewById(R.id.btnMaybe)
     }
 
     private fun bindEventData() {
@@ -92,13 +95,9 @@ class EventDetailsActivity : AppCompatActivity() {
     }
 
     private fun setupRSVPButtons() {
-        btnGoing.setOnClickListener {
-            updateRSVP("going")
-        }
-
-        btnNotGoing.setOnClickListener {
-            updateRSVP("notGoing")
-        }
+        btnGoing.setOnClickListener { updateRSVP("going") }
+        btnNotGoing.setOnClickListener { updateRSVP("notGoing") }
+        btnMaybe.setOnClickListener { updateRSVP("maybe") }
     }
 
     private fun updateRSVP(status: String) {
@@ -110,32 +109,25 @@ class EventDetailsActivity : AppCompatActivity() {
 
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val response = RetrofitClient.api.rsvpEvent(authHeader, event.id!!, status)
+                        val rsvp = RsvpResponse(
+                            status = status,
+                            dietaryChoice = dietarySpinner.text?.toString() ?: "",
+                            musicChoice = songInput.text?.toString() ?: ""
+                        )
+
+                        val response = RetrofitClient.api.rsvpEvent(authHeader, event.id!!, rsvp)
+
                         runOnUiThread {
                             if (response.isSuccessful) {
-                                Toast.makeText(
-                                    this@EventDetailsActivity,
-                                    "RSVP updated: $status",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                btnConfirmedGoing.visibility = if (status == "going") Button.VISIBLE else Button.GONE
-                                btnGoing.visibility = if (status == "going") Button.GONE else Button.VISIBLE
-                                btnNotGoing.visibility = if (status == "notGoing") Button.GONE else Button.VISIBLE
+                                Toast.makeText(this@EventDetailsActivity, "RSVP updated: $status", Toast.LENGTH_SHORT).show()
+                                updateButtonVisibility(status)
                             } else {
-                                Toast.makeText(
-                                    this@EventDetailsActivity,
-                                    "Failed to update RSVP",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(this@EventDetailsActivity, "Failed to update RSVP", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } catch (e: Exception) {
                         runOnUiThread {
-                            Toast.makeText(
-                                this@EventDetailsActivity,
-                                "Network error: ${e.message}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            Toast.makeText(this@EventDetailsActivity, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -143,6 +135,13 @@ class EventDetailsActivity : AppCompatActivity() {
                 Toast.makeText(this, "Authentication failed", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun updateButtonVisibility(status: String) {
+        btnGoing.visibility = if (status == "going") Button.GONE else Button.VISIBLE
+        btnNotGoing.visibility = if (status == "notGoing") Button.GONE else Button.VISIBLE
+        btnMaybe.visibility = if (status == "maybe") Button.GONE else Button.VISIBLE
+        btnConfirmedGoing.visibility = if (status == "going") Button.VISIBLE else Button.GONE
     }
 
     private fun setupGoogleDriveButton() {
