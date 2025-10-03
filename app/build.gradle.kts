@@ -2,8 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
-    id("org.jetbrains.kotlin.kapt")
-
+    id ("kotlin-kapt")
 
 
 }
@@ -54,6 +53,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
+
+
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
 
@@ -63,7 +66,12 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
-    implementation("com.github.bumptech.glide:glide:4.15.1")
-    kapt("com.github.bumptech.glide:compiler:4.15.1")
-    implementation("com.google.firebase:firebase-storage")
+
+    // Retrofit (for API calls)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+// Retrofit with Gson converter
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+// OkHttp (network client)
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
 }

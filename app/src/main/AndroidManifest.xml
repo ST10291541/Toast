@@ -18,6 +18,9 @@
         <activity
             android:name=".ResetPasswordActivity"
             android:exported="false" />
+
+        <activity android:name=".CreateEventActivity"
+            android:exported="false" />
         <activity
             android:name=".MyEventsActivity"
             android:exported="false" />
@@ -52,5 +55,7 @@
         </activity>
         <activity android:name=".MainActivity" />
     </application>
+
+
 
 </manifest>

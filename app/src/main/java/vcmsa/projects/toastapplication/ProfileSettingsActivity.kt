@@ -138,7 +138,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
             selectedImageUri = data?.data
             if (selectedImageUri != null) {
                 Glide.with(this).load(selectedImageUri).into(binding.profileImage)

@@ -24,9 +24,9 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         // More Actions
-       // findViewById<LinearLayout>(R.id.btnCreateEvent).setOnClickListener {
-         //   startActivity(Intent(this, CreateEventActivity::class.java))
-       // }
+       findViewById<LinearLayout>(R.id.btnCreateEvent).setOnClickListener {
+            startActivity(Intent(this, CreateEventActivity::class.java))
+        }
         findViewById<LinearLayout>(R.id.btnMyEvents).setOnClickListener {
             startActivity(Intent(this, MyEventsActivity::class.java))
         }
