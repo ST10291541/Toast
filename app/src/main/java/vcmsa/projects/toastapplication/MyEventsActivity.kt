@@ -3,9 +3,9 @@ package vcmsa.projects.toastapplication
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -20,8 +20,7 @@ class MyEventsActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var eventsRecyclerView: RecyclerView
     private val eventsList = mutableListOf<Event>()
-    private lateinit var adapter: EventsAdapter
-
+    private lateinit var adapter: EventAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,27 +30,32 @@ class MyEventsActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
+        // RecyclerView setup
         eventsRecyclerView = findViewById(R.id.eventsRecyclerView)
         eventsRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = EventsAdapter(eventsList)
+        adapter = EventAdapter(eventsList) { event ->
+            val intent = Intent(this, EventDetailsActivity::class.java)
+            intent.putExtra("event", event)
+            startActivity(intent)
+        }
         eventsRecyclerView.adapter = adapter
 
+        // Load events from Firestore
         loadEvents()
 
-        // FAB to create new events
+        // Floating action button to create new events
         findViewById<ExtendedFloatingActionButton>(R.id.fabCreateEvent).setOnClickListener {
             startActivity(Intent(this, CreateEventActivity::class.java))
         }
 
-        // Handle incoming dynamic links (for RSVPs)
+        // Handle incoming dynamic links (RSVP links)
         handleDynamicLinks()
-
     }
 
     private fun loadEvents() {
         val currentUserId = auth.currentUser?.uid ?: return
         db.collection("events")
-            .whereEqualTo("creatorId", currentUserId)
+            .whereEqualTo("hostUserId", currentUserId)
             .get()
             .addOnSuccessListener { result ->
                 eventsList.clear()
@@ -74,6 +78,9 @@ class MyEventsActivity : AppCompatActivity() {
                     val eventId = it.lastPathSegment
                     openEventDetails(eventId)
                 }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to handle dynamic link", Toast.LENGTH_SHORT).show()
             }
     }
 

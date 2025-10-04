@@ -17,13 +17,12 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, DashboardActivity::class.java))
         }
         findViewById<LinearLayout>(R.id.navEvents).setOnClickListener {
-            startActivity(Intent(this, EventDetailsActivity::class.java))
+            startActivity(Intent(this, MyEventsActivity::class.java))
         }
         findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
         }
 
-        // More Actions
        findViewById<LinearLayout>(R.id.btnCreateEvent).setOnClickListener {
             startActivity(Intent(this, CreateEventActivity::class.java))
         }

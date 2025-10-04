@@ -8,11 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
-import vcmsa.projects.toastapplication.network.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import vcmsa.projects.toastapplication.RsvpResponse
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
+import vcmsa.projects.toastapplication.network.RetrofitClient
 
 class EventDetailsActivity : AppCompatActivity() {
 
@@ -24,18 +26,16 @@ class EventDetailsActivity : AppCompatActivity() {
     private lateinit var goingCount: TextView
     private lateinit var eventDate: TextView
     private lateinit var eventLocation: TextView
-    private lateinit var organizerName: TextView
     private lateinit var aboutDescription: TextView
     private lateinit var dietarySpinner: AutoCompleteTextView
     private lateinit var songInput: TextInputEditText
     private lateinit var btnGoogleDrive: Button
     private lateinit var btnGoing: Button
     private lateinit var btnNotGoing: Button
-    private lateinit var btnConfirmedGoing: Button
+    private lateinit var btnMaybe: Button
+    private lateinit var btnBack: ImageButton
 
     private lateinit var event: Event
-    private lateinit var btnMaybe: Button
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,15 +43,16 @@ class EventDetailsActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // Initialize views
         initViews()
 
-        // Get event object passed via intent
+        // Back button
+        btnBack.setOnClickListener { finish() }
+
+        // Get event object from intent
         event = intent.getSerializableExtra("event") as? Event
-            ?: return finish() // close if no event
+            ?: return finish()
 
         bindEventData()
-
         setupRSVPButtons()
         setupGoogleDriveButton()
     }
@@ -59,7 +60,6 @@ class EventDetailsActivity : AppCompatActivity() {
     private fun initViews() {
         eventImage = findViewById(R.id.eventImage)
         eventTitle = findViewById(R.id.eventTitle)
-        countdownTimer = findViewById(R.id.countdownTimer)
         goingCount = findViewById(R.id.goingCount)
         eventDate = findViewById(R.id.eventDate)
         eventLocation = findViewById(R.id.eventLocation)
@@ -70,6 +70,8 @@ class EventDetailsActivity : AppCompatActivity() {
         btnGoing = findViewById(R.id.btnGoing)
         btnNotGoing = findViewById(R.id.btnNotGoing)
         btnMaybe = findViewById(R.id.btnMaybe)
+        btnBack = findViewById(R.id.btnBack)
+        countdownTimer = findViewById(R.id.countdownTimer) // optional: add in XML if needed
     }
 
     private fun bindEventData() {
@@ -79,9 +81,9 @@ class EventDetailsActivity : AppCompatActivity() {
         eventLocation.text = event.location
         goingCount.text = "🎉 +${event.attendeeCount} people are going"
 
-        // Load event image if you have a URL, else keep default
+        // Load event image (if URL)
         Glide.with(this)
-            .load(event.googleDriveLink) // or any image URL
+            .load(if (event.googleDriveLink.contains("http")) event.googleDriveLink else R.drawable.event3)
             .placeholder(R.drawable.event3)
             .into(eventImage)
 
@@ -92,6 +94,28 @@ class EventDetailsActivity : AppCompatActivity() {
             event.dietaryRequirements
         )
         dietarySpinner.setAdapter(dietaryAdapter)
+
+        // Countdown timer
+        countdownTimer.text = getCountdownText(event.date, event.time)
+    }
+
+    private fun getCountdownText(date: String, time: String): String {
+        return try {
+            val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            val eventDateTime = format.parse("$date $time")
+            val now = Date()
+            val diff = eventDateTime.time - now.time
+            if (diff > 0) {
+                val days = TimeUnit.MILLISECONDS.toDays(diff)
+                val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
+                "$days days, $hours hours, $minutes minutes left"
+            } else {
+                "Event started"
+            }
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     private fun setupRSVPButtons() {
@@ -119,15 +143,27 @@ class EventDetailsActivity : AppCompatActivity() {
 
                         runOnUiThread {
                             if (response.isSuccessful) {
-                                Toast.makeText(this@EventDetailsActivity, "RSVP updated: $status", Toast.LENGTH_SHORT).show()
-                                updateButtonVisibility(status)
+                                Toast.makeText(
+                                    this@EventDetailsActivity,
+                                    "RSVP updated: $status",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                disableRSVPButtons()
                             } else {
-                                Toast.makeText(this@EventDetailsActivity, "Failed to update RSVP", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@EventDetailsActivity,
+                                    "Failed to update RSVP",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     } catch (e: Exception) {
                         runOnUiThread {
-                            Toast.makeText(this@EventDetailsActivity, "Network error: ${e.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                this@EventDetailsActivity,
+                                "Network error: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 }
@@ -137,19 +173,37 @@ class EventDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateButtonVisibility(status: String) {
-        btnGoing.visibility = if (status == "going") Button.GONE else Button.VISIBLE
-        btnNotGoing.visibility = if (status == "notGoing") Button.GONE else Button.VISIBLE
-        btnMaybe.visibility = if (status == "maybe") Button.GONE else Button.VISIBLE
-        btnConfirmedGoing.visibility = if (status == "going") Button.VISIBLE else Button.GONE
+    private fun disableRSVPButtons() {
+        btnGoing.isEnabled = false
+        btnNotGoing.isEnabled = false
+        btnMaybe.isEnabled = false
     }
-
     private fun setupGoogleDriveButton() {
         btnGoogleDrive.setOnClickListener {
             val link = event.googleDriveLink
-            if (link.isNotEmpty()) {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                startActivity(intent)
+
+            if (link.isNotBlank()) {
+                try {
+                    // Use ACTION_VIEW to open the link in browser or Drive app
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+
+                    // Verify that there is an app to handle this intent
+                    if (intent.resolveActivity(packageManager) != null) {
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "No app available to open the link",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this,
+                        "Failed to open link: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             } else {
                 Toast.makeText(this, "No Google Drive link available", Toast.LENGTH_SHORT).show()
             }

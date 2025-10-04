@@ -23,7 +23,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="280dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/event3"
                 android:contentDescription="Event banner image"
                 app:layout_collapseMode="parallax" />
 
@@ -67,7 +66,6 @@
                 android:id="@+id/eventTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Henry’s 30th Birthday Bash"
                 android:textSize="28sp"
                 android:textColor="@color/black"
                 android:textStyle="bold"
@@ -77,35 +75,24 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
-                android:id="@+id/countdownTimer"
+                android:id="@+id/goingCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Days to Go: 4"
-                android:textColor="@color/black"
+                android:textColor="@color/dark_gray"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 app:layout_constraintTop_toBottomOf="@id/eventTitle"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/goingCount"
+                android:id="@+id/countdownTimer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🎉 +20 people are going"
                 android:textColor="@color/dark_gray"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"
-                app:layout_constraintTop_toBottomOf="@id/countdownTimer"
+                app:layout_constraintTop_toBottomOf="@id/goingCount"
                 app:layout_constraintStart_toStartOf="parent" />
-
-            <View
-                android:id="@+id/separator1"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#EDEDED"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/goingCount" />
 
             <LinearLayout
                 android:id="@+id/dateTimeLocationLayout"
@@ -113,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/separator1"
+                app:layout_constraintTop_toBottomOf="@id/goingCount"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
@@ -136,7 +123,6 @@
                         android:id="@+id/eventDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="30 October, 2025 • 4:00PM - 9:00PM"
                         android:layout_marginStart="12dp"
                         android:textColor="@color/black"
                         android:textSize="16sp" />
@@ -165,7 +151,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Gala Convention Center\n36 Guild Street London, UK"
                         android:layout_marginStart="12dp"
                         android:textColor="@color/black"
                         android:textSize="16sp" />
@@ -212,7 +197,6 @@
                     android:src="@drawable/ic_profile"
                     android:scaleType="centerCrop"
                     android:layout_marginEnd="12dp"
-
                     android:contentDescription="Organizer profile picture" />
 
                 <LinearLayout
@@ -224,7 +208,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ashfaq Sayem"
                         android:textStyle="bold"
                         android:textSize="16sp"
                         android:textColor="@color/black" />
@@ -240,7 +223,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Friend"
                     android:background="@drawable/bg_tag"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
@@ -264,7 +246,6 @@
                 android:id="@+id/aboutDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Enjoy your favorite dishes and celebrate with friends and family. Food from local food trucks will be available."
                 android:layout_marginTop="8dp"
                 android:textColor="@color/dark_gray"
                 android:textSize="16sp"
