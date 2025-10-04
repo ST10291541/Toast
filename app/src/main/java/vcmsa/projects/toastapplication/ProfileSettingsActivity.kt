@@ -11,7 +11,9 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
+import android.widget.ImageButton
 import com.bumptech.glide.Glide
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import vcmsa.projects.toastapplication.databinding.ActivityProfileSettingsBinding
@@ -37,6 +39,19 @@ class ProfileSettingsActivity : AppCompatActivity() {
             Toast.makeText(this, "You must be signed in to edit profile.", Toast.LENGTH_SHORT).show()
             finish()
             return
+        }
+
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
+            startActivity(Intent(this, DashboardActivity::class.java))
+        }
+
+        val btnLogout = findViewById<MaterialButton>(R.id.btnLogout)
+        btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut() // Sign out the user
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
         }
 
         // Load profile info

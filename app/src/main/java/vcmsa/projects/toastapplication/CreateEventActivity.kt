@@ -73,7 +73,7 @@ class CreateEventActivity : AppCompatActivity() {
         btnPickTime.setOnClickListener { showTimePicker() }
 
         // Optional: populate spinner
-        val categories = listOf("General", "Study", "Party", "Meetup")
+        val categories = listOf("Wedding", "Party", "Food", "Art", "Meetup", "General")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         eventCategorySpinner.adapter = adapter

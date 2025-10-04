@@ -99,7 +99,6 @@
             android:inputType="textPassword"
             android:background="@drawable/edittext_bg"
             android:padding="12dp"
-            android:drawableEnd="@drawable/ic_visibility_off"
             android:layout_marginBottom="12dp" />
 
         <Button

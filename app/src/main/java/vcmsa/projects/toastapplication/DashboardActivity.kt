@@ -2,8 +2,6 @@ package vcmsa.projects.toastapplication
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -37,13 +35,59 @@ class DashboardActivity : AppCompatActivity() {
         tvUserName = findViewById(R.id.tvUserName)
         imgProfile = findViewById(R.id.imgProfile)
 
-        // Set user info
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+
         auth.currentUser?.let { user ->
-            tvUserName.text = user.displayName ?: "User"
-            user.photoUrl?.let {
-                Glide.with(this).load(it).circleCrop().into(imgProfile)
+            val userId = user.uid
+
+            // Reference to user's profile in Firestore
+            val userDocRef = db.collection("users").document(userId)
+
+            userDocRef.get().addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    // Get firstName + image
+                    val firstName = document.getString("firstName")
+                    val profileImageUrl = document.getString("profileImageUri")
+
+                    // Set name
+                    if (!firstName.isNullOrEmpty()) {
+                        tvUserName.text = firstName
+                    } else {
+                        // Fallback: if no firstName, show email
+                        tvUserName.text = user.email ?: "User"
+                    }
+
+                    // Set image
+                    if (!profileImageUrl.isNullOrEmpty()) {
+                        Glide.with(this)
+                            .load(profileImageUrl)
+                            .circleCrop()
+                            .into(imgProfile)
+                    } else {
+                        // Fallback: use FirebaseAuth photoUrl if exists
+                        user.photoUrl?.let {
+                            Glide.with(this).load(it).circleCrop().into(imgProfile)
+                        }
+                    }
+                } else {
+                    // No profile in DB → fallback to email
+                    tvUserName.text = user.email ?: "User"
+                    user.photoUrl?.let {
+                        Glide.with(this).load(it).circleCrop().into(imgProfile)
+                    }
+                }
+            }.addOnFailureListener {
+                // On error → fallback
+                tvUserName.text = user.email ?: "User"
+                user.photoUrl?.let {
+                    Glide.with(this).load(it).circleCrop().into(imgProfile)
+                }
             }
-        } ?: run { tvUserName.text = "Guest" }
+        } ?: run {
+            // Not logged in
+            tvUserName.text = "Guest"
+        }
 
         // Bottom navigation
         findViewById<LinearLayout>(R.id.navHome).setOnClickListener {
@@ -82,6 +126,8 @@ class DashboardActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.chipParty).setOnClickListener { filterEventsByCategory("Party") }
         findViewById<LinearLayout>(R.id.chipFood).setOnClickListener { filterEventsByCategory("Food") }
         findViewById<LinearLayout>(R.id.chipArt).setOnClickListener { filterEventsByCategory("Art") }
+        findViewById<LinearLayout>(R.id.chipMeet).setOnClickListener { filterEventsByCategory("Meet-Up") }
+        findViewById<LinearLayout>(R.id.chipGeneral).setOnClickListener { filterEventsByCategory("General") }
 
         // Load events from Firestore
         loadEvents()

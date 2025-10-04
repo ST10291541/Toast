@@ -99,6 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Location"
+            android:drawableStart="@drawable/ic_location"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
 
@@ -108,7 +109,6 @@
             android:layout_height="wrap_content"
             android:hint="Enter Location"
             android:background="@drawable/edittext_bg"
-            android:drawableStart="@drawable/ic_location"
             android:padding="16dp"
             android:layout_marginBottom="16dp"/>
 
@@ -143,7 +143,7 @@
             android:id="@+id/musicPollCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Include Music Suggestion Polls"
+            android:text="Include Music Suggestion Poll"
             android:layout_marginBottom="16dp"/>
 
         <!-- Google Drive Link -->

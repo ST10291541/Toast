@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:text="*Password must be between 6 and 12 characters, includes a special character, uppercase, lowercase and numeric value"
             android:textColor="#FF0000"
-            android:textSize="6pt"
+            android:textSize="8pt"
             android:padding="8dp"/>
 
         <!-- Password -->
@@ -108,7 +108,6 @@
             android:inputType="textPassword"
             android:background="@drawable/edittext_bg"
             android:padding="12dp"
-            android:drawableEnd="@drawable/ic_visibility_off"
             android:layout_marginBottom="12dp" />
 
         <!-- Done Button -->

@@ -31,7 +31,6 @@
             android:layout_alignTop="@id/imgProfile"
             android:layout_marginStart="12dp"
             android:layout_toEndOf="@id/imgProfile"
-            android:text="John Smith"
             android:textColor="@android:color/black"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -167,6 +166,62 @@
                     android:textColor="@android:color/white"
                     android:textSize="13sp"
                     android:layout_marginStart="6dp"/>
+            </LinearLayout>
+
+            <!-- Meet up -->
+            <LinearLayout
+                android:id="@+id/chipMeet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/chip_bg"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:layout_marginEnd="12dp"
+                android:elevation="3dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_bell" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Meet-Up"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp"
+                    android:layout_marginStart="6dp" />
+
+            </LinearLayout>
+
+            <!-- General -->
+            <LinearLayout
+                android:id="@+id/chipGeneral"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/chip_pink"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:layout_marginEnd="12dp"
+                android:elevation="3dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_bell" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="General"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp"
+                    android:layout_marginStart="6dp" />
+
             </LinearLayout>
         </LinearLayout>
     </HorizontalScrollView>
