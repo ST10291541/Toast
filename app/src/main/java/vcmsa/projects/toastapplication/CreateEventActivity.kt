@@ -2,6 +2,7 @@ package vcmsa.projects.toastapplication
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
@@ -48,6 +49,10 @@ class CreateEventActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         initViews()
         setupCreateEventButton()
+
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
+            startActivity(Intent(this, DashboardActivity::class.java))
+        }
     }
 
     private fun initViews() {

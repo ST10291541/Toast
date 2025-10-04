@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://toastapi-rpmg.onrender.com/"
+    public const val BASE_URL = "https://toastapi-dqjl.onrender.com/"
 
     private val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 

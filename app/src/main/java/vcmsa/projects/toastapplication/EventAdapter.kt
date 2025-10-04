@@ -1,13 +1,16 @@
 package vcmsa.projects.toastapplication
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import vcmsa.projects.toastapplication.network.RetrofitClient
 
 class EventAdapter(
-    private var eventList: List<Event>,
+    private var eventList: MutableList<Event>,
     private val onItemClick: (Event) -> Unit
 ) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
 
@@ -17,7 +20,7 @@ class EventAdapter(
         val timeText: TextView = itemView.findViewById(R.id.eventTime)
         val locationText: TextView = itemView.findViewById(R.id.eventLocation)
         val categoryText: TextView = itemView.findViewById(R.id.eventCategory)
-        val attendeeCountText: TextView = itemView.findViewById(R.id.eventAttendeeCount)
+        val shareButton: Button = itemView.findViewById(R.id.btnShare)
 
         fun bind(event: Event) {
             titleText.text = event.title
@@ -25,13 +28,29 @@ class EventAdapter(
             timeText.text = event.time
             locationText.text = event.location
             categoryText.text = event.category
-            attendeeCountText.text = "Attendees: ${event.attendeeCount}"
 
+            // Open details on item click
             itemView.setOnClickListener {
                 onItemClick(event)
             }
-        }
 
+            // ✅ Generate the shareable deep link to open app directly
+            val shareLink = "${RetrofitClient.BASE_URL}api/events/share/${event.id}"
+
+            shareButton.setOnClickListener {
+                val shareIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        "🎉 You're invited to ${event.title}!\nRSVP and submit preferences: $shareLink"
+                    )
+                    type = "text/plain"
+                }
+                itemView.context.startActivity(
+                    Intent.createChooser(shareIntent, "Share event via")
+                )
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
@@ -47,7 +66,7 @@ class EventAdapter(
     override fun getItemCount(): Int = eventList.size
 
     fun updateData(newList: List<Event>) {
-        eventList = newList
+        eventList = newList.toMutableList()
         notifyDataSetChanged()
     }
 }

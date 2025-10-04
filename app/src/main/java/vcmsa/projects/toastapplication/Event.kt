@@ -13,7 +13,7 @@ data class Event(
     val createdAt: String = "",
     val hostEmail: String = "",
     val hostUserId: String = "",              // previously creatorId
-    val attendeeCount: Int = 0,
+    var attendeeCount: Int = 0,
     val googleDriveLink: String = "",
     val dietaryRequirements: List<String> = emptyList(),
     val musicSuggestions: List<String> = emptyList(),

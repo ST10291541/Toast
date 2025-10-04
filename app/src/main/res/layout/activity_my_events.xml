@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -8,6 +9,7 @@
     android:background="@android:color/white"
     tools:context=".MyEventsActivity">
 
+    <!-- AppBar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,18 +22,37 @@
             android:layout_height="?attr/actionBarSize"
             app:titleTextColor="@color/black">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="My Events"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_gravity="center_vertical" />
+            <!-- Use LinearLayout for proper alignment -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/circle_white_bg"
+                    android:contentDescription="Go back"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="My Events"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- The RecyclerView will hold all the individual event cards -->
+    <!-- RecyclerView for event cards -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/eventsRecyclerView"
         android:layout_width="match_parent"
@@ -43,7 +64,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/item_event_card" />
 
-    <!-- Floating Action Button for creating a new event -->
+    <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fabCreateEvent"
         android:layout_width="wrap_content"
@@ -54,6 +75,6 @@
         android:textColor="@android:color/white"
         app:icon="@drawable/ic_add"
         app:iconTint="@android:color/white"
-        android:backgroundTint="#8BC34A" /> <!-- Bright Blue Accent -->
+        android:backgroundTint="#8BC34A" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

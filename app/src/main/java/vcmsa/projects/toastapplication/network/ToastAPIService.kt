@@ -8,6 +8,7 @@ import vcmsa.projects.toastapplication.RsvpResponse
 
 interface ToastApiService {
 
+    // Events
     @POST("api/events")
     suspend fun createEvent(
         @Header("Authorization") token: String,
@@ -32,18 +33,25 @@ interface ToastApiService {
         @Body body: Map<String, String>
     ): Response<Event>
 
-    // Submit poll / RSVP
-    @POST("api/events/{eventId}/poll")
+    // Poll
+    @POST("api/events/{id}/poll")
     suspend fun submitPoll(
         @Header("Authorization") token: String,
-        @Path("eventId") eventId: String,
+        @Path("id") eventId: String,
         @Body body: Map<String, String>
     ): Response<Unit>
 
-    @POST("api/events/{id}/rsvp")
+    // RSVP
+    @POST("api/rsvp/{eventId}")
     suspend fun rsvpEvent(
         @Header("Authorization") token: String,
-        @Path("id") id: String,
+        @Path("eventId") eventId: String,
         @Body rsvp: RsvpResponse
-    ): Response<Event>
+    ): Response<Unit>
+
+    @GET("api/rsvp/{eventId}/attendees")
+    suspend fun getAttendees(
+        @Header("Authorization") token: String,
+        @Path("eventId") eventId: String
+    ): Response<List<Any>> // You can create an Attendee data class if needed
 }

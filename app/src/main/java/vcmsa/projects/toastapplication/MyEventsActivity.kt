@@ -3,6 +3,7 @@ package vcmsa.projects.toastapplication
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -47,6 +48,9 @@ class MyEventsActivity : AppCompatActivity() {
         findViewById<ExtendedFloatingActionButton>(R.id.fabCreateEvent).setOnClickListener {
             startActivity(Intent(this, CreateEventActivity::class.java))
         }
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
+            startActivity(Intent(this, DashboardActivity::class.java))
+        }
 
         // Handle incoming dynamic links (RSVP links)
         handleDynamicLinks()
@@ -62,11 +66,29 @@ class MyEventsActivity : AppCompatActivity() {
                 for (doc in result) {
                     val event = doc.toObject(Event::class.java).apply { id = doc.id }
                     eventsList.add(event)
+                    listenToRSVPChanges(event)
                 }
                 adapter.notifyDataSetChanged()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error loading events: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun listenToRSVPChanges(event: Event) {
+        db.collection("events")
+            .document(event.id!!)
+            .collection("rsvps")
+            .addSnapshotListener { snapshot, e ->
+                if (e != null || snapshot == null) return@addSnapshotListener
+                val goingCount = snapshot.documents.count { it.getString("status") == "going" }
+                event.attendeeCount = goingCount
+
+                // Notify adapter of this specific item
+                val index = eventsList.indexOfFirst { it.id == event.id }
+                if (index != -1) {
+                    adapter.notifyItemChanged(index)
+                }
             }
     }
 

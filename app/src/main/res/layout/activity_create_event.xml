@@ -12,24 +12,31 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Back Arrow -->
-        <ImageView
-            android:id="@+id/backArrow"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_arrow_back"
-            android:contentDescription="Back"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Title -->
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Back Button and Title -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New Event"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="24dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_white_bg"
+                android:contentDescription="Go back"
+                android:src="@drawable/ic_arrow_back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Event"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:layout_marginStart="16dp"/>
+        </LinearLayout>
 
         <!-- Event Name -->
         <EditText
@@ -66,60 +73,23 @@
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Time Buttons -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-
-            <Button
-                android:id="@+id/btnToday"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="Today"
-                android:backgroundTint="@color/black"
-                android:textColor="@android:color/white"/>
-
-            <Button
-                android:id="@+id/btnTomorrow"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="Tomorrow"
-                android:backgroundTint="@color/black"
-                android:textColor="@android:color/white"/>
-
-            <Button
-                android:id="@+id/btnThisWeek"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="This Week"
-                android:backgroundTint="@color/black"
-                android:textColor="@android:color/white"/>
-        </LinearLayout>
-
-        <!-- Date Picker -->
+        <!-- Date & Time Pickers -->
         <Button
             android:id="@+id/btnPickDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Pick Date"
-            android:drawableLeft="@drawable/ic_calendar"
+            android:drawableStart="@drawable/ic_calendar"
             android:backgroundTint="@color/black"
             android:textColor="@android:color/white"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Time Picker -->
         <Button
             android:id="@+id/btnPickTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Pick Time"
-            android:drawableLeft="@drawable/ic_time"
+            android:drawableStart="@drawable/ic_time"
             android:backgroundTint="@color/black"
             android:textColor="@android:color/white"
             android:layout_marginBottom="16dp"/>
@@ -132,23 +102,15 @@
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/eventLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
+            android:hint="Enter Location"
             android:background="@drawable/edittext_bg"
-            android:layout_marginBottom="16dp">
-
-            <EditText
-                android:id="@+id/eventLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter Location"
-                android:background="@drawable/edittext_bg"
-                android:drawableLeft="@drawable/ic_location"
-                android:padding="16dp"/>
-        </LinearLayout>
+            android:drawableStart="@drawable/ic_location"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp"/>
 
         <!-- Dietary Specifications -->
         <TextView
@@ -176,7 +138,7 @@
             android:padding="16dp"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Music Poll Checkbox -->
+        <!-- Music Poll -->
         <CheckBox
             android:id="@+id/musicPollCheckbox"
             android:layout_width="wrap_content"
@@ -194,35 +156,15 @@
             android:padding="16dp"
             android:layout_marginBottom="24dp"/>
 
+        <!-- Action Buttons -->
         <Button
             android:id="@+id/createEventBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="CREATE EVENT"
             android:textColor="@android:color/white"
-            android:backgroundTint="@android:color/black"
+            android:backgroundTint="@android:color/holo_blue_light"
             android:textAllCaps="true"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Invite Friends Button -->
-        <Button
-            android:id="@+id/inviteFriendsBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="INVITE FRIENDS"
-            android:backgroundTint="@color/gold"
-            android:textAllCaps="true"
-            android:drawableRight="@drawable/ic_arrow_right"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Share Event Link Button -->
-        <Button
-            android:id="@+id/shareEventLinkBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SHARE EVENT LINK"
-            android:backgroundTint="@color/gold"
-            android:textAllCaps="true"
-            android:drawableRight="@drawable/ic_arrow_right" />
+            android:layout_marginBottom="16dp"/>
     </LinearLayout>
 </ScrollView>

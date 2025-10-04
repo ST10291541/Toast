@@ -8,12 +8,12 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="280dp"
         android:background="@android:color/transparent">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:contentScrim="@color/white"
             app:expandedTitleGravity="top">
@@ -21,33 +21,24 @@
             <ImageView
                 android:id="@+id/eventImage"
                 android:layout_width="match_parent"
-                android:layout_height="280dp"
+                android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:contentDescription="Event banner image"
                 app:layout_collapseMode="parallax" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="16dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <ImageButton
-                    android:id="@+id/btnBack"
-                    android:layout_width="63dp"
-                    android:layout_height="63dp"
-                    android:background="@drawable/circle_white_bg"
-                    android:contentDescription="Go back"
-                    android:src="@drawable/ic_arrow_back"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/black" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/circle_white_bg"
+                android:contentDescription="Go back"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/black"
+                app:layout_collapseMode="pin" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -58,9 +49,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="48dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp">
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/eventTitle"
@@ -69,7 +58,6 @@
                 android:textSize="28sp"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -80,9 +68,9 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/dark_gray"
                 android:textSize="14sp"
-                android:layout_marginTop="4dp"
                 app:layout_constraintTop_toBottomOf="@id/eventTitle"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="4dp" />
 
             <TextView
                 android:id="@+id/countdownTimer"
@@ -90,22 +78,21 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/dark_gray"
                 android:textSize="14sp"
-                android:layout_marginTop="4dp"
                 app:layout_constraintTop_toBottomOf="@id/goingCount"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="4dp" />
 
             <LinearLayout
                 android:id="@+id/dateTimeLocationLayout"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/goingCount"
+                app:layout_constraintTop_toBottomOf="@id/countdownTimer"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp">
 
                 <LinearLayout
-                    android:id="@+id/dateLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -154,82 +141,10 @@
                         android:layout_marginStart="12dp"
                         android:textColor="@color/black"
                         android:textSize="16sp" />
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_location"
-                        android:contentDescription="View map"
-                        app:tint="@color/dark_gray" />
                 </LinearLayout>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/organizerTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hosted By"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:textColor="@color/black"
-                android:layout_marginTop="24dp"
-                app:layout_constraintTop_toBottomOf="@id/dateTimeLocationLayout"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <LinearLayout
-                android:id="@+id/organizerLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingVertical="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackground"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@id/organizerTitle"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_profile"
-                    android:scaleType="centerCrop"
-                    android:layout_marginEnd="12dp"
-                    android:contentDescription="Organizer profile picture" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Organizer"
-                        android:textColor="@color/dark_gray"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_tag"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="4dp"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
+            <!-- About Section -->
             <TextView
                 android:id="@+id/aboutTitle"
                 android:layout_width="wrap_content"
@@ -238,21 +153,22 @@
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="@color/black"
-                android:layout_marginTop="24dp"
-                app:layout_constraintTop_toBottomOf="@id/organizerLayout"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/dateTimeLocationLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="24dp" />
 
             <TextView
                 android:id="@+id/aboutDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:textColor="@color/dark_gray"
                 android:textSize="16sp"
                 app:layout_constraintTop_toBottomOf="@id/aboutTitle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp" />
 
+            <!-- Preferences Section -->
             <TextView
                 android:id="@+id/interactiveTitle"
                 android:layout_width="wrap_content"
@@ -261,65 +177,62 @@
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:textColor="@color/black"
-                android:layout_marginTop="24dp"
                 app:layout_constraintTop_toBottomOf="@id/aboutDescription"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="24dp" />
 
             <TextView
                 android:id="@+id/dietaryTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Dietary Requirement/Option:"
-                android:textStyle="normal"
                 android:textSize="14sp"
                 android:textColor="@color/black"
-                android:layout_marginTop="12dp"
                 app:layout_constraintTop_toBottomOf="@id/interactiveTitle"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="12dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/dietarySpinnerLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="Select an option"
-                android:layout_marginTop="4dp"
                 app:layout_constraintTop_toBottomOf="@id/dietaryTitle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="4dp">
 
                 <AutoCompleteTextView
                     android:id="@+id/dietarySpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none"
-                    android:labelFor="@id/dietarySpinner"
-                    android:entries="@array/dietary_options"
-                    tools:ignore="LabelFor,SpeakableTextPresentCheck" />
+                    android:entries="@array/dietary_options" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Song Suggestion -->
             <TextView
                 android:id="@+id/songTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Song Suggestions:"
-                android:textStyle="normal"
                 android:textSize="14sp"
                 android:textColor="@color/black"
-                android:layout_marginTop="16dp"
                 app:layout_constraintTop_toBottomOf="@id/dietarySpinnerLayout"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="16dp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/songInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="Suggest a song, artist, or genre"
-                android:layout_marginTop="4dp"
                 app:layout_constraintTop_toBottomOf="@id/songTitle"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="4dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/songInput"
@@ -327,6 +240,7 @@
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Buttons -->
             <Button
                 android:id="@+id/btnGoogleDrive"
                 android:layout_width="0dp"
@@ -336,17 +250,27 @@
                 android:textColor="@android:color/white"
                 android:layout_marginTop="24dp"
                 android:paddingVertical="12dp"
-                android:textSize="16sp"
-                app:icon="@drawable/ic_google"
-                app:iconGravity="textStart"
-                app:iconTint="@android:color/white"
                 app:layout_constraintTop_toBottomOf="@id/songInputLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <Button
+                android:id="@+id/btnSavePreferences"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Save Preferences"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/going_green"
+                android:layout_marginTop="16dp"
+                android:paddingVertical="12dp"
+                app:layout_constraintTop_toBottomOf="@id/btnGoogleDrive"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- RSVP Floating Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/rsvpFloatingCard"
         android:layout_width="match_parent"
@@ -370,8 +294,8 @@
                 android:id="@+id/rsvpButtonContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="end">
 
                 <Button
                     android:id="@+id/btnNotGoing"
@@ -380,7 +304,6 @@
                     android:layout_height="wrap_content"
                     android:text="Can't Go"
                     android:textColor="@color/black"
-                    app:strokeColor="@color/dark_gray"
                     android:layout_marginEnd="8dp" />
 
                 <Button
