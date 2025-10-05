@@ -22,6 +22,7 @@ class MyEventsActivity : AppCompatActivity() {
     private lateinit var eventsRecyclerView: RecyclerView
     private val eventsList = mutableListOf<Event>()
     private lateinit var adapter: EventAdapter
+    private val eventGuestMap = mutableMapOf<String, List<Guest>>() // guest list per event
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +67,7 @@ class MyEventsActivity : AppCompatActivity() {
                 for (doc in result) {
                     val event = doc.toObject(Event::class.java).apply { id = doc.id }
                     eventsList.add(event)
-                    listenToRSVPChanges(event)
+                    listenToGuests(event) // listen to RSVPs and preferences
                 }
                 adapter.notifyDataSetChanged()
             }
@@ -75,21 +76,47 @@ class MyEventsActivity : AppCompatActivity() {
             }
     }
 
-    private fun listenToRSVPChanges(event: Event) {
-        db.collection("events")
-            .document(event.id!!)
-            .collection("rsvps")
-            .addSnapshotListener { snapshot, e ->
-                if (e != null || snapshot == null) return@addSnapshotListener
-                val goingCount = snapshot.documents.count { it.getString("status") == "going" }
-                event.attendeeCount = goingCount
+    private fun listenToGuests(event: Event) {
+        val rsvpsRef = db.collection("events").document(event.id!!).collection("rsvps")
+        val prefsRef = db.collection("events").document(event.id!!).collection("preferences")
+        val guestMap = mutableMapOf<String, Guest>()
 
-                // Notify adapter of this specific item
-                val index = eventsList.indexOfFirst { it.id == event.id }
-                if (index != -1) {
-                    adapter.notifyItemChanged(index)
+        // Listen to RSVPs
+        rsvpsRef.addSnapshotListener { snapshot, e ->
+            if (e != null || snapshot == null) return@addSnapshotListener
+            for (doc in snapshot.documents) {
+                val guestId = doc.id
+                val userName = doc.getString("userName") ?: "Anonymous"
+                val status = doc.getString("status") ?: "Not set"
+                val current = guestMap[guestId]
+                guestMap[guestId] = Guest(
+                    guestId,
+                    userName,
+                    status,
+                    current?.dietaryChoice ?: "Not specified",
+                    current?.musicChoice ?: "Not specified"
+                )
+            }
+            eventGuestMap[event.id!!] = guestMap.values.toList()
+            event.attendeeCount = guestMap.values.count { it.status == "going" }
+            adapter.notifyItemChanged(eventsList.indexOfFirst { it.id == event.id })
+        }
+
+        // Listen to Preferences
+        prefsRef.addSnapshotListener { snapshot, e ->
+            if (e != null || snapshot == null) return@addSnapshotListener
+            for (doc in snapshot.documents) {
+                val guestId = doc.id
+                val dietary = doc.getString("dietaryChoice") ?: "Not specified"
+                val music = doc.getString("musicChoice") ?: "Not specified"
+                val current = guestMap[guestId]
+                if (current != null) {
+                    guestMap[guestId] = current.copy(dietaryChoice = dietary, musicChoice = music)
                 }
             }
+            eventGuestMap[event.id!!] = guestMap.values.toList()
+            adapter.notifyItemChanged(eventsList.indexOfFirst { it.id == event.id })
+        }
     }
 
     private fun handleDynamicLinks() {

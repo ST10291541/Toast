@@ -95,17 +95,6 @@
             android:textColor="@android:color/white"
             android:layout_marginBottom="16dp"/>
 
-        <!-- End Time Picker -->
-        <Button
-            android:id="@+id/btnPickEndTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Pick End Time"
-            android:drawableStart="@drawable/ic_time"
-            android:backgroundTint="@color/black"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="16dp"/>
-
         <!-- Location -->
         <TextView
             android:layout_width="wrap_content"

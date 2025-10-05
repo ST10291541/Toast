@@ -19,7 +19,6 @@ class EventDetailsActivity : AppCompatActivity() {
     private lateinit var goingCount: TextView
     private lateinit var eventDate: TextView
     private lateinit var eventTime: TextView
-    private lateinit var eventEndTime: TextView
     private lateinit var eventLocation: TextView
     private lateinit var aboutDescription: TextView
     private lateinit var categoryText: TextView
@@ -76,7 +75,6 @@ class EventDetailsActivity : AppCompatActivity() {
         countdownTimer = findViewById(R.id.countdownTimer)
         eventDate = findViewById(R.id.eventDate)
         eventTime = findViewById(R.id.eventTime)
-        eventEndTime = findViewById(R.id.eventEndTime)
         eventLocation = findViewById(R.id.eventLocation)
         aboutDescription = findViewById(R.id.aboutDescription)
         categoryText = findViewById(R.id.categoryText)
@@ -92,7 +90,6 @@ class EventDetailsActivity : AppCompatActivity() {
             aboutDescription.text = ev.description
             eventDate.text = "Date: ${ev.date}"
             eventTime.text = "Start: ${ev.time}"
-            eventEndTime.text = if (!ev.endTime.isNullOrBlank()) "End: ${ev.endTime}" else "End time not set"
             eventLocation.text = "Location: ${ev.location}"
             categoryText.text = "Category: ${ev.category}"
 
@@ -122,20 +119,28 @@ class EventDetailsActivity : AppCompatActivity() {
             .collection("preferences")
             .get()
             .addOnSuccessListener { snapshot ->
-                val dietaryList = mutableListOf<String>()
-                val musicList = mutableListOf<String>()
+                val dietaryList = mutableSetOf<String>()
+                val musicList = mutableSetOf<String>()
+
                 snapshot.documents.forEach { doc ->
-                    doc.getString("dietaryChoice")?.let { dietaryList.add(it) }
-                    doc.getString("musicChoice")?.let { musicList.add(it) }
+                    doc.getString("dietaryChoice")?.let { if(it.isNotBlank()) dietaryList.add(it) }
+                    doc.getString("musicChoice")?.let { if(it.isNotBlank()) musicList.add(it) }
                 }
+
                 dietaryText.text = if (dietaryList.isNotEmpty())
                     "Dietary Requirements: ${dietaryList.joinToString(", ")}"
                 else "No dietary preferences"
+
                 musicText.text = if (musicList.isNotEmpty())
                     "Music Suggestions: ${musicList.joinToString(", ")}"
                 else "No music suggestions"
             }
+            .addOnFailureListener {
+                dietaryText.text = "Failed to load dietary preferences"
+                musicText.text = "Failed to load music suggestions"
+            }
     }
+
 
     private fun loadRSVPCount() {
         val evId = event?.id
@@ -155,7 +160,7 @@ class EventDetailsActivity : AppCompatActivity() {
         event?.let { ev ->
             countdownRunnable = object : Runnable {
                 override fun run() {
-                    countdownTimer.text = getCountdownText(ev.date, ev.time, ev.endTime)
+                    countdownTimer.text = getCountdownText(ev.date, ev.time)
                     handler.postDelayed(this, 60000)
                 }
             }
@@ -163,11 +168,10 @@ class EventDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun getCountdownText(date: String, startTime: String, endTime: String?): String {
+    private fun getCountdownText(date: String, startTime: String?): String {
         return try {
             val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
             val eventStart = format.parse("$date $startTime")
-            val eventEnd = if (!endTime.isNullOrBlank()) format.parse("$date $endTime") else eventStart
             val now = Date()
             val diff = eventStart.time - now.time
             if (diff > 0) {
@@ -175,8 +179,6 @@ class EventDetailsActivity : AppCompatActivity() {
                 val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
                 "$days days, $hours hours, $minutes minutes left"
-            } else if (eventEnd != null && now.time < eventEnd.time) {
-                "Event in progress until ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(eventEnd)}"
             } else {
                 "Event ended"
             }
