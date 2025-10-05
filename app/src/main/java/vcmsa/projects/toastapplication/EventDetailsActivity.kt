@@ -3,43 +3,46 @@ package vcmsa.projects.toastapplication
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.widget.*
+import android.widget.Button
+import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 class EventDetailsActivity : AppCompatActivity() {
 
     private lateinit var eventTitle: TextView
-    private lateinit var countdownTimer: TextView
-    private lateinit var goingCount: TextView
     private lateinit var eventDate: TextView
     private lateinit var eventTime: TextView
     private lateinit var eventLocation: TextView
     private lateinit var aboutDescription: TextView
     private lateinit var categoryText: TextView
-    private lateinit var dietaryText: TextView
-    private lateinit var musicText: TextView
+    private lateinit var attendeeCountText: TextView
     private lateinit var btnGoogleDrive: Button
     private lateinit var btnBack: ImageButton
+    private lateinit var guestsRecyclerView: RecyclerView
 
-    private var event: Event? = null
-    private val handler = Handler(Looper.getMainLooper())
-    private lateinit var countdownRunnable: Runnable
     private val db = FirebaseFirestore.getInstance()
+    private var event: Event? = null
+    private val guestList = mutableListOf<Guest>()
+    private lateinit var guestAdapter: GuestAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(R.layout.activity_event_details)
 
         initViews()
         btnBack.setOnClickListener { finish() }
 
-        // Get Event object from intent
+        guestAdapter = GuestAdapter(guestList)
+        guestsRecyclerView.layoutManager = LinearLayoutManager(this)
+        guestsRecyclerView.adapter = guestAdapter
+
         val eventFromIntent = intent.getSerializableExtra("event") as? Event
         if (eventFromIntent == null || eventFromIntent.id.isNullOrBlank()) {
             Toast.makeText(this, "Event data not found", Toast.LENGTH_SHORT).show()
@@ -47,41 +50,22 @@ class EventDetailsActivity : AppCompatActivity() {
             return
         }
 
-        // Fetch latest event data from Firestore
-        db.collection("events")
-            .document(eventFromIntent.id)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                snapshot.toObject(Event::class.java)?.let { fetchedEvent ->
-                    event = fetchedEvent
-                    bindEventData()
-                    loadPreferences()
-                    loadRSVPCount()
-                    startCountdown()
-                } ?: run {
-                    Toast.makeText(this, "Event not found in database", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Failed to load event details", Toast.LENGTH_SHORT).show()
-                finish()
-            }
+        event = eventFromIntent
+        bindEventData()
+        loadGuestsAndPreferences()
     }
 
     private fun initViews() {
         eventTitle = findViewById(R.id.eventTitle)
-        goingCount = findViewById(R.id.goingCount)
-        countdownTimer = findViewById(R.id.countdownTimer)
         eventDate = findViewById(R.id.eventDate)
         eventTime = findViewById(R.id.eventTime)
         eventLocation = findViewById(R.id.eventLocation)
         aboutDescription = findViewById(R.id.aboutDescription)
         categoryText = findViewById(R.id.categoryText)
-        dietaryText = findViewById(R.id.dietaryText)
-        musicText = findViewById(R.id.musicText)
+        attendeeCountText = findViewById(R.id.attendeeCount)
         btnGoogleDrive = findViewById(R.id.btnGoogleDrive)
         btnBack = findViewById(R.id.btnBack)
+        guestsRecyclerView = findViewById(R.id.guestsRecyclerView)
     }
 
     private fun bindEventData() {
@@ -110,85 +94,52 @@ class EventDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadPreferences() {
-        val evId = event?.id
-        if (evId.isNullOrBlank()) return
+    private fun loadGuestsAndPreferences() {
+        val evId = event?.id ?: return
+        val rsvpsRef = db.collection("events").document(evId).collection("rsvps")
+        val prefsRef = db.collection("events").document(evId).collection("preferences")
 
-        db.collection("events")
-            .document(evId)
-            .collection("preferences")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val dietaryList = mutableSetOf<String>()
-                val musicList = mutableSetOf<String>()
+        val guestMap = mutableMapOf<String, Guest>()
 
-                snapshot.documents.forEach { doc ->
-                    doc.getString("dietaryChoice")?.let { if(it.isNotBlank()) dietaryList.add(it) }
-                    doc.getString("musicChoice")?.let { if(it.isNotBlank()) musicList.add(it) }
-                }
-
-                dietaryText.text = if (dietaryList.isNotEmpty())
-                    "Dietary Requirements: ${dietaryList.joinToString(", ")}"
-                else "No dietary preferences"
-
-                musicText.text = if (musicList.isNotEmpty())
-                    "Music Suggestions: ${musicList.joinToString(", ")}"
-                else "No music suggestions"
+        // Listen for RSVPs
+        rsvpsRef.addSnapshotListener { snapshot, e ->
+            if (e != null || snapshot == null) return@addSnapshotListener
+            for (doc in snapshot.documents) {
+                val guestId = doc.id
+                val userName = doc.getString("userName") ?: "Anonymous"
+                val status = doc.getString("status") ?: "Not set"
+                val current = guestMap[guestId]
+                guestMap[guestId] = Guest(
+                    guestId,
+                    userName,
+                    status,
+                    current?.dietaryChoice ?: "Not specified",
+                    current?.musicChoice ?: "Not specified"
+                )
             }
-            .addOnFailureListener {
-                dietaryText.text = "Failed to load dietary preferences"
-                musicText.text = "Failed to load music suggestions"
-            }
-    }
+            updateGuestList(guestMap)
+        }
 
-
-    private fun loadRSVPCount() {
-        val evId = event?.id
-        if (evId.isNullOrBlank()) return
-
-        db.collection("events")
-            .document(evId)
-            .collection("rsvps")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val goingCountValue = snapshot.documents.count { it.getString("status") == "going" }
-                goingCount.text = "Attendees: $goingCountValue"
-            }
-    }
-
-    private fun startCountdown() {
-        event?.let { ev ->
-            countdownRunnable = object : Runnable {
-                override fun run() {
-                    countdownTimer.text = getCountdownText(ev.date, ev.time)
-                    handler.postDelayed(this, 60000)
+        // Listen for Preferences
+        prefsRef.addSnapshotListener { snapshot, e ->
+            if (e != null || snapshot == null) return@addSnapshotListener
+            for (doc in snapshot.documents) {
+                val guestId = doc.id
+                val dietary = doc.getString("dietaryChoice") ?: "Not specified"
+                val music = doc.getString("musicChoice") ?: "Not specified"
+                val current = guestMap[guestId]
+                if (current != null) {
+                    guestMap[guestId] = current.copy(dietaryChoice = dietary, musicChoice = music)
                 }
             }
-            handler.post(countdownRunnable)
+            updateGuestList(guestMap)
         }
     }
 
-    private fun getCountdownText(date: String, startTime: String?): String {
-        return try {
-            val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            val eventStart = format.parse("$date $startTime")
-            val now = Date()
-            val diff = eventStart.time - now.time
-            if (diff > 0) {
-                val days = TimeUnit.MILLISECONDS.toDays(diff)
-                val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
-                "$days days, $hours hours, $minutes minutes left"
-            } else {
-                "Event ended"
-            }
-        } catch (e: Exception) {
-            ""
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (::countdownRunnable.isInitialized) handler.removeCallbacks(countdownRunnable)
+    private fun updateGuestList(guestMap: Map<String, Guest>) {
+        guestList.clear()
+        guestList.addAll(guestMap.values)
+        attendeeCountText.text = "Attendees: ${guestList.count { it.status == "going" }}"
+        guestAdapter.notifyDataSetChanged()
     }
 }

@@ -35,11 +35,16 @@ class MyEventsActivity : AppCompatActivity() {
         // RecyclerView setup
         eventsRecyclerView = findViewById(R.id.eventsRecyclerView)
         eventsRecyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = EventAdapter(eventsList) { event ->
-            val intent = Intent(this, EventDetailsActivity::class.java)
-            intent.putExtra("event", event)
-            startActivity(intent)
-        }
+
+        adapter = EventAdapter(
+            eventList = eventsList,
+            onItemClick = { event: Event ->
+                val intent = Intent(this, EventDetailsActivity::class.java)
+                intent.putExtra("event", event)
+                startActivity(intent)
+            },
+            eventGuestMap = eventGuestMap
+        )
         eventsRecyclerView.adapter = adapter
 
         // Load events from Firestore
@@ -67,7 +72,7 @@ class MyEventsActivity : AppCompatActivity() {
                 for (doc in result) {
                     val event = doc.toObject(Event::class.java).apply { id = doc.id }
                     eventsList.add(event)
-                    listenToGuests(event) // listen to RSVPs and preferences
+                    listenToGuests(event) // fetch RSVPs and preferences for display only
                 }
                 adapter.notifyDataSetChanged()
             }
@@ -81,7 +86,7 @@ class MyEventsActivity : AppCompatActivity() {
         val prefsRef = db.collection("events").document(event.id!!).collection("preferences")
         val guestMap = mutableMapOf<String, Guest>()
 
-        // Listen to RSVPs
+        // Listen to RSVPs (read-only)
         rsvpsRef.addSnapshotListener { snapshot, e ->
             if (e != null || snapshot == null) return@addSnapshotListener
             for (doc in snapshot.documents) {
@@ -102,7 +107,7 @@ class MyEventsActivity : AppCompatActivity() {
             adapter.notifyItemChanged(eventsList.indexOfFirst { it.id == event.id })
         }
 
-        // Listen to Preferences
+        // Listen to Preferences (read-only)
         prefsRef.addSnapshotListener { snapshot, e ->
             if (e != null || snapshot == null) return@addSnapshotListener
             for (doc in snapshot.documents) {

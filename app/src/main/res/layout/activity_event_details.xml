@@ -64,20 +64,13 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/goingCount"
+                android:id="@+id/attendeeCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/dark_gray"
                 android:textSize="14sp"
-                android:layout_marginTop="4dp" />
-
-            <TextView
-                android:id="@+id/countdownTimer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/dark_gray"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="4dp"
+                android:text="Attendees: 0"/>
 
             <!-- Date & Location -->
             <TextView
@@ -90,13 +83,6 @@
 
             <TextView
                 android:id="@+id/eventTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/eventEndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
@@ -136,21 +122,21 @@
                 android:textSize="16sp"
                 android:layout_marginTop="8dp" />
 
-            <!-- Preferences Section -->
+            <!-- Guest List Section -->
             <TextView
-                android:id="@+id/dietaryText"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Guest List"
+                android:textStyle="bold"
+                android:textSize="18sp"
                 android:textColor="@color/black"
-                android:textSize="16sp"
                 android:layout_marginTop="16dp" />
 
-            <TextView
-                android:id="@+id/musicText"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/guestsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="16sp"
+                android:nestedScrollingEnabled="false"
                 android:layout_marginTop="8dp" />
 
             <!-- Google Drive Link -->
@@ -163,6 +149,7 @@
                 android:textColor="@android:color/white"
                 android:layout_marginTop="24dp"
                 android:paddingVertical="12dp" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
