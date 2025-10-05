@@ -67,7 +67,6 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
-
     // Retrofit (for API calls)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     // Retrofit with Gson converter

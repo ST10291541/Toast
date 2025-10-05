@@ -49,7 +49,7 @@ class EventDetailsActivity : AppCompatActivity() {
         initViews()
         btnBack.setOnClickListener { finish() }
 
-        // 1️⃣ Check if launched via deep link (custom URI scheme)
+        // 1️⃣ Check if launched via deep link (custom URI)
         intent?.data?.let { uri ->
             val eventId = uri.lastPathSegment
             if (eventId != null) {
@@ -58,7 +58,7 @@ class EventDetailsActivity : AppCompatActivity() {
             }
         }
 
-        // 2️⃣ Check if launched via Firebase Dynamic Link
+        // 2️⃣ Firebase Dynamic Link
         Firebase.dynamicLinks.getDynamicLink(intent)
             .addOnSuccessListener { pendingLinkData ->
                 val deepLink = pendingLinkData?.link
@@ -68,7 +68,7 @@ class EventDetailsActivity : AppCompatActivity() {
             }
             .addOnFailureListener { /* ignore */ }
 
-        // 3️⃣ Normal launch via Intent extra
+        // 3️⃣ Normal Intent
         event = intent.getSerializableExtra("event") as? Event ?: return finish()
 
         setupActivity()
@@ -121,23 +121,29 @@ class EventDetailsActivity : AppCompatActivity() {
     }
 
     private fun bindEventData() {
-        eventTitle.text = event.title
-        aboutDescription.text = event.description
-        eventDate.text = "${event.date} • ${event.time}"
-        eventLocation.text = event.location
+        // Set basic event info
+        eventTitle.text = event.title ?: "No Title"
+        aboutDescription.text = event.description ?: "No Description"
+        eventDate.text = "${event.date ?: "TBD"} • ${event.time ?: "TBD"}"
+        eventLocation.text = event.location ?: "No Location"
         goingCount.text = "🎉 ${event.attendeeCount ?: 0} people are going"
 
-        Glide.with(this)
-            .load(if (event.googleDriveLink.contains("http")) event.googleDriveLink else R.drawable.event3)
-            .placeholder(R.drawable.event3)
-            .into(eventImage)
-
+        // Setup dietary requirements dropdown
         val dietaryAdapter = ArrayAdapter(
             this,
             android.R.layout.simple_dropdown_item_1line,
-            event.dietaryRequirements
+            event.dietaryRequirements ?: listOf()
         )
         dietarySpinner.setAdapter(dietaryAdapter)
+
+        // Display Google Drive link on the button
+        if (!event.googleDriveLink.isNullOrBlank()) {
+            btnGoogleDrive.text = "Open Google Drive Folder"
+            btnGoogleDrive.isEnabled = true
+        } else {
+            btnGoogleDrive.text = "No Google Drive Link"
+            btnGoogleDrive.isEnabled = false
+        }
     }
 
     private fun startCountdown() {
@@ -234,7 +240,6 @@ class EventDetailsActivity : AppCompatActivity() {
         val userId = user.uid
         val db = FirebaseFirestore.getInstance()
 
-        // Save preferences
         val prefData = mapOf(
             "dietaryChoice" to dietarySpinner.text?.toString(),
             "musicChoice" to songInput.text?.toString()
@@ -242,7 +247,6 @@ class EventDetailsActivity : AppCompatActivity() {
         db.collection("events").document(event.id!!).collection("preferences")
             .document(userId).set(prefData)
 
-        // Save RSVP status
         val rsvpData = mapOf("status" to status)
         db.collection("events").document(event.id!!).collection("rsvps")
             .document(userId).set(rsvpData)
@@ -262,7 +266,6 @@ class EventDetailsActivity : AppCompatActivity() {
     }
 
     private fun updateRSVPButtonsUI(selectedStatus: String) {
-        // Reset all buttons
         btnGoing.setBackgroundColor(resources.getColor(R.color.gray))
         btnGoing.setTextColor(resources.getColor(android.R.color.white))
 
@@ -272,7 +275,6 @@ class EventDetailsActivity : AppCompatActivity() {
         btnMaybe.setBackgroundColor(resources.getColor(R.color.gray))
         btnMaybe.setTextColor(resources.getColor(android.R.color.white))
 
-        // Highlight selected
         when (selectedStatus) {
             "going" -> btnGoing.setBackgroundColor(resources.getColor(R.color.going_green))
             "notGoing" -> btnNotGoing.setBackgroundColor(resources.getColor(R.color.notgoing_red_dark))
@@ -283,13 +285,13 @@ class EventDetailsActivity : AppCompatActivity() {
     private fun setupGoogleDriveButton() {
         btnGoogleDrive.setOnClickListener {
             val link = event.googleDriveLink
-            if (link.isNotBlank()) {
+            if (!link.isNullOrBlank()) {
                 try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                    if (intent.resolveActivity(packageManager) != null) startActivity(intent)
-                    else Toast.makeText(this, "No app available to open the link", Toast.LENGTH_SHORT).show()
+                    // Always open in browser to avoid Drive app errors
+                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                    startActivity(browserIntent)
                 } catch (e: Exception) {
-                    Toast.makeText(this, "Failed to open link: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Cannot open link: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(this, "No Google Drive link available", Toast.LENGTH_SHORT).show()
