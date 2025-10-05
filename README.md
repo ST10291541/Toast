@@ -1,5 +1,7 @@
 # Toast
 Toast is a mobile application designed for social groups and university students to plan, share, and manage events seamlessly. The app enables private event creation, group interaction, RSVP tracking, and media sharing — all supported by a secure backend API.
+<img width="500" height="500" alt="toast_logo" src="https://github.com/user-attachments/assets/c74a8818-1795-472a-84e8-6cc9c2aaa498" />
+
 
 ## 1: Requirements
 
