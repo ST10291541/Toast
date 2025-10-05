@@ -111,13 +111,16 @@
             android:textColor="@android:color/black" />
 
         <!-- Sign Up Text -->
-        <TextView
-            android:id="@+id/tvRegister"
+        <Button
+            android:id="@+id/btnRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don’t have account? Sign Up"
+            android:text="Don’t have an account? Sign Up"
             android:textColor="#0000EE"
-            android:layout_marginTop="8dp" />
+            android:background="@android:color/transparent"
+            android:layout_marginTop="8dp"
+            android:padding="0dp"
+            android:textAllCaps="false" />
 
     </LinearLayout>
 </ScrollView>

@@ -2,6 +2,7 @@ package vcmsa.projects.toastapplication
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
         findViewById<com.google.android.gms.common.SignInButton>(R.id.btnGoogle)
             .setOnClickListener { signInWithGoogle() }
 
-        findViewById<TextView>(R.id.tvRegister).setOnClickListener {
+        findViewById<Button>(R.id.btnRegister).setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
@@ -93,6 +94,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
+        googleSignInClient.signOut() // Sign out previous Google sessions first
         signInLauncher.launch(signInIntent)
     }
 
