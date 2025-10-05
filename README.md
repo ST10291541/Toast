@@ -67,7 +67,25 @@ These are how the system performs:
 
 ---
 
-## 5: Credits
+## 5: Features
+
+The following is the features:
+
+* **Google drive link:**
+  Users can share their google dirve folder link and guests can upload images to that link.
+
+* **RSVP Form:**
+  Guests are sent a RSVP formn where they can notify the host if they are attening or not and a live attendee count updates.
+
+* **Poll:**
+  Users can create a dietary requirements poll as well as a music suggestiosn poll so guests to interact with.
+
+* **Countdown:**
+  Users are notified with a live countdown of how many days, hours and minutes are left until the event. 
+
+---
+
+## 6: Credits
 
 This application was created by **The Toast Team**
 
@@ -79,7 +97,7 @@ This application was created by **The Toast Team**
 
 ---
 
-## 6: Google Play Store
+## 7: Google Play Store
 
 The app will be published on the Google Play Store for public download.
 
@@ -88,12 +106,12 @@ The app will be published on the Google Play Store for public download.
 
 ---
 
-## 7: GitHub Link
+## 9: GitHub Link
 [App Repository](https://github.com/ST10291541/Technovate)
 
 ---
 
-## 8: References
+## 9: References
 
 * How do REST APIs communicate with databases?: (https://moldstud.com/articles/p-how-do-rest-apis-communicate-with-databases)
 * Integrating Restful Apis With Frontend: (https://frontenddeveloper.io/insight/integrating-restful-apis-with-frontend/)
