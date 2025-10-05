@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -31,6 +32,17 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_dashboard)
+
+        val bottomNav = findViewById<LinearLayout>(R.id.bottomNav)
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { view, insets ->
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                insets.systemWindowInsetBottom
+            )
+            insets
+        }
 
         auth = FirebaseAuth.getInstance()
         tvUserName = findViewById(R.id.tvUserName)
@@ -114,11 +126,51 @@ class DashboardActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.chipParty).setOnClickListener { filterEventsByCategory("Party") }
         findViewById<LinearLayout>(R.id.chipFood).setOnClickListener { filterEventsByCategory("Food") }
         findViewById<LinearLayout>(R.id.chipArt).setOnClickListener { filterEventsByCategory("Art") }
-        findViewById<LinearLayout>(R.id.chipMeet).setOnClickListener { filterEventsByCategory("Meet-Up") }
-        findViewById<LinearLayout>(R.id.chipGeneral).setOnClickListener { filterEventsByCategory("General") }
+        findViewById<LinearLayout>(R.id.chipMeet).setOnClickListener { filterEventsByCategory("Art") }
+        findViewById<LinearLayout>(R.id.chipGeneral).setOnClickListener { filterEventsByCategory("Art") }
 
         // 🔹 Load events from Firestore
         loadEvents()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshUserProfile()
+    }
+
+    private fun refreshUserProfile() {
+        val db = FirebaseFirestore.getInstance()
+        auth.currentUser?.let { user ->
+            val userId = user.uid
+            db.collection("users").document(userId).get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.exists()) {
+                        val firstName = document.getString("firstName")
+                        val profileImageUrl = document.getString("profileImageUri")
+
+                        tvUserName.text = firstName ?: user.email ?: "User"
+
+                        if (!profileImageUrl.isNullOrEmpty()) {
+                            Glide.with(this).load(profileImageUrl).circleCrop().into(imgProfile)
+                        } else {
+                            user.photoUrl?.let {
+                                Glide.with(this).load(it).circleCrop().into(imgProfile)
+                            }
+                        }
+                    } else {
+                        tvUserName.text = user.email ?: "User"
+                        user.photoUrl?.let {
+                            Glide.with(this).load(it).circleCrop().into(imgProfile)
+                        }
+                    }
+                }
+                .addOnFailureListener {
+                    tvUserName.text = user.email ?: "User"
+                    user.photoUrl?.let {
+                        Glide.with(this).load(it).circleCrop().into(imgProfile)
+                    }
+                }
+        }
     }
 
     private fun loadEvents() {

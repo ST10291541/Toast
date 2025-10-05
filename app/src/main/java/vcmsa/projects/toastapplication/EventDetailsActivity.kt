@@ -97,44 +97,39 @@ class EventDetailsActivity : AppCompatActivity() {
     private fun loadGuestsAndPreferences() {
         val evId = event?.id ?: return
         val rsvpsRef = db.collection("events").document(evId).collection("rsvps")
-        val prefsRef = db.collection("events").document(evId).collection("preferences")
+        val eventRef = db.collection("events").document(evId)
 
-        val guestMap = mutableMapOf<String, Guest>()
+        // Listen for event document (pollResponses)
+        eventRef.addSnapshotListener { eventSnapshot, e ->
+            if (e != null || eventSnapshot == null || !eventSnapshot.exists()) return@addSnapshotListener
+            val pollResponses = eventSnapshot.get("pollResponses") as? Map<String, Map<String, Any>> ?: emptyMap()
 
-        // Listen for RSVPs
-        rsvpsRef.addSnapshotListener { snapshot, e ->
-            if (e != null || snapshot == null) return@addSnapshotListener
-            for (doc in snapshot.documents) {
-                val guestId = doc.id
-                val userName = doc.getString("userName") ?: "Anonymous"
-                val status = doc.getString("status") ?: "Not set"
-                val current = guestMap[guestId]
-                guestMap[guestId] = Guest(
-                    guestId,
-                    userName,
-                    status,
-                    current?.dietaryChoice ?: "Not specified",
-                    current?.musicChoice ?: "Not specified"
-                )
-            }
-            updateGuestList(guestMap)
-        }
+            // Now get RSVPs
+            rsvpsRef.addSnapshotListener { rsvpSnapshot, rsvpError ->
+                if (rsvpError != null || rsvpSnapshot == null) return@addSnapshotListener
 
-        // Listen for Preferences
-        prefsRef.addSnapshotListener { snapshot, e ->
-            if (e != null || snapshot == null) return@addSnapshotListener
-            for (doc in snapshot.documents) {
-                val guestId = doc.id
-                val dietary = doc.getString("dietaryChoice") ?: "Not specified"
-                val music = doc.getString("musicChoice") ?: "Not specified"
-                val current = guestMap[guestId]
-                if (current != null) {
-                    guestMap[guestId] = current.copy(dietaryChoice = dietary, musicChoice = music)
+                val guests = mutableListOf<Guest>()
+
+                for (rsvpDoc in rsvpSnapshot.documents) {
+                    val guestId = rsvpDoc.id
+                    val userName = rsvpDoc.getString("userName") ?: "Anonymous"
+                    val status = rsvpDoc.getString("status") ?: "Not set"
+
+                    val pollData = pollResponses[guestId]
+                    val dietary = pollData?.get("dietaryChoice") as? String ?: "Not specified"
+                    val music = pollData?.get("musicChoice") as? String ?: "Not specified"
+
+                    guests.add(Guest(guestId, userName, status, dietary, music))
                 }
+
+                guestList.clear()
+                guestList.addAll(guests)
+                attendeeCountText.text = "Attendees: ${guestList.count { it.status == "going" }}"
+                guestAdapter.notifyDataSetChanged()
             }
-            updateGuestList(guestMap)
         }
     }
+
 
     private fun updateGuestList(guestMap: Map<String, Guest>) {
         guestList.clear()
