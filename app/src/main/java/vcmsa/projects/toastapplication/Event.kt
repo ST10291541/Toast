@@ -7,7 +7,8 @@ data class Event(
     val title: String = "",
     val description: String = "",
     val date: String = "",
-    val time: String = "",
+    val time: String = "",               // renamed from 'time'
+    val endTime: String = "",                 // new end time field
     val location: String = "",
     val category: String = "",
     val createdAt: String = "",

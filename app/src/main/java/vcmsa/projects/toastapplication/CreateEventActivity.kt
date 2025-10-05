@@ -10,10 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
-import vcmsa.projects.toastapplication.network.RetrofitClient
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import vcmsa.projects.toastapplication.network.RetrofitClient
 
 class CreateEventActivity : AppCompatActivity() {
 
@@ -31,10 +32,11 @@ class CreateEventActivity : AppCompatActivity() {
 
     private lateinit var btnPickDate: Button
     private lateinit var btnPickTime: Button
+    private lateinit var btnPickEndTime: Button
     private var selectedDate: String? = null // yyyy-MM-dd
-    private var selectedTime: String? = null // HH:mm
+    private var selectedStartTime: String? = null // HH:mm
+    private var selectedEndTime: String? = null // HH:mm
     private lateinit var contentLayout: LinearLayout
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +69,12 @@ class CreateEventActivity : AppCompatActivity() {
         createEventBtn = findViewById(R.id.createEventBtn)
         btnPickDate = findViewById(R.id.btnPickDate)
         btnPickTime = findViewById(R.id.btnPickTime)
+        btnPickEndTime = findViewById(R.id.btnPickEndTime)
         contentLayout = findViewById(R.id.contentLayout)
 
         btnPickDate.setOnClickListener { showDatePicker() }
-        btnPickTime.setOnClickListener { showTimePicker() }
+        btnPickTime.setOnClickListener { showTimePicker(isStart = true) }
+        btnPickEndTime.setOnClickListener { showTimePicker(isStart = false) }
 
         // Optional: populate spinner
         val categories = listOf("Wedding", "Party", "Food", "Art", "Meetup", "General")
@@ -93,14 +97,20 @@ class CreateEventActivity : AppCompatActivity() {
         datePicker.show()
     }
 
-    private fun showTimePicker() {
+    private fun showTimePicker(isStart: Boolean) {
         val now = java.util.Calendar.getInstance()
         val hour = now.get(java.util.Calendar.HOUR_OF_DAY)
         val minute = now.get(java.util.Calendar.MINUTE)
 
         val timePicker = TimePickerDialog(this, { _, h, m ->
-            selectedTime = String.format("%02d:%02d", h, m)
-            btnPickTime.text = selectedTime
+            val formattedTime = String.format("%02d:%02d", h, m)
+            if (isStart) {
+                selectedStartTime = formattedTime
+                btnPickTime.text = "Start: $formattedTime"
+            } else {
+                selectedEndTime = formattedTime
+                btnPickEndTime.text = "End: $formattedTime"
+            }
         }, hour, minute, true)
 
         timePicker.show()
@@ -124,15 +134,15 @@ class CreateEventActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (selectedDate.isNullOrEmpty() || selectedTime.isNullOrEmpty()) {
-                Toast.makeText(this, "Please select a date and time", Toast.LENGTH_SHORT).show()
+            if (selectedDate.isNullOrEmpty() || selectedStartTime.isNullOrEmpty() || selectedEndTime.isNullOrEmpty()) {
+                Toast.makeText(this, "Please select a date, start time, and end time", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val request = CreateEventRequest(
+            val apiRequest = CreateEventRequest(
                 title = title,
                 date = selectedDate!!,
-                time = selectedTime!!,
+                time = selectedStartTime!!,
                 location = location,
                 description = description,
                 category = category,
@@ -141,24 +151,49 @@ class CreateEventActivity : AppCompatActivity() {
                 googleDriveLink = googleDriveLink
             )
 
-            createEvent(request)
+            val event = Event(
+                title = title,
+                description = description,
+                date = selectedDate!!,
+                time = selectedStartTime!!,
+                endTime = selectedEndTime!!,
+                location = location,
+                category = category,
+                googleDriveLink = googleDriveLink,
+                dietaryRequirements = dietary,
+                musicSuggestions = musicPoll,
+                hostEmail = auth.currentUser?.email ?: "",
+                hostUserId = auth.currentUser?.uid ?: "",
+                createdAt = System.currentTimeMillis().toString()
+            )
+
+            // Save to Firestore first, then API, then redirect
+            saveEventToFirestore(event) {
+                createEvent(apiRequest) {
+                    // Redirect after both succeed
+                    val intent = Intent(this, MyEventsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            }
         }
     }
 
-    private fun createEvent(event: CreateEventRequest) {
-        // Build the request object from your Event
-        val request = CreateEventRequest(
-            title = event.title,
-            date = event.date,
-            time = event.time,
-            location = event.location,
-            description = event.description,
-            category = event.category,
-            dietaryRequirements = event.dietaryRequirements,
-            musicSuggestions = event.musicSuggestions,
-            googleDriveLink = event.googleDriveLink
-        )
+    private fun saveEventToFirestore(event: Event, onSuccess: () -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val docRef = db.collection("events").document()
+        event.id = docRef.id
+        docRef.set(event)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Firestore save failed: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+    }
 
+    private fun createEvent(event: CreateEventRequest, onSuccess: () -> Unit) {
         val user = FirebaseAuth.getInstance().currentUser
 
         user?.getIdToken(true)?.addOnCompleteListener { task ->
@@ -168,11 +203,11 @@ class CreateEventActivity : AppCompatActivity() {
 
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val response = RetrofitClient.api.createEvent(authHeader, request)
+                        val response = RetrofitClient.api.createEvent(authHeader, event)
                         runOnUiThread {
                             if (response.isSuccessful) {
                                 Toast.makeText(this@CreateEventActivity, "Event created successfully!", Toast.LENGTH_SHORT).show()
-                                finish()
+                                onSuccess()
                             } else {
                                 Toast.makeText(this@CreateEventActivity, "Error: ${response.code()} ${response.message()}", Toast.LENGTH_LONG).show()
                             }

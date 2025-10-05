@@ -7,300 +7,186 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide
-import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class EventDetailsActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-
-    private lateinit var eventImage: ImageView
     private lateinit var eventTitle: TextView
     private lateinit var countdownTimer: TextView
     private lateinit var goingCount: TextView
     private lateinit var eventDate: TextView
+    private lateinit var eventTime: TextView
+    private lateinit var eventEndTime: TextView
     private lateinit var eventLocation: TextView
     private lateinit var aboutDescription: TextView
-    private lateinit var dietarySpinner: AutoCompleteTextView
-    private lateinit var songInput: TextInputEditText
+    private lateinit var categoryText: TextView
+    private lateinit var dietaryText: TextView
+    private lateinit var musicText: TextView
     private lateinit var btnGoogleDrive: Button
-    private lateinit var btnGoing: Button
-    private lateinit var btnNotGoing: Button
-    private lateinit var btnMaybe: Button
     private lateinit var btnBack: ImageButton
-    private lateinit var btnSavePreferences: Button
 
-    private lateinit var event: Event
+    private var event: Event? = null
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var countdownRunnable: Runnable
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_details)
 
-        auth = FirebaseAuth.getInstance()
         initViews()
         btnBack.setOnClickListener { finish() }
 
-        // 1️⃣ Check if launched via deep link (custom URI)
-        intent?.data?.let { uri ->
-            val eventId = uri.lastPathSegment
-            if (eventId != null) {
-                loadEventFromId(eventId)
-                return
-            }
+        // Get Event object from intent
+        val eventFromIntent = intent.getSerializableExtra("event") as? Event
+        if (eventFromIntent == null || eventFromIntent.id.isNullOrBlank()) {
+            Toast.makeText(this, "Event data not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
 
-        // 2️⃣ Firebase Dynamic Link
-        Firebase.dynamicLinks.getDynamicLink(intent)
-            .addOnSuccessListener { pendingLinkData ->
-                val deepLink = pendingLinkData?.link
-                deepLink?.lastPathSegment?.let { eventId ->
-                    loadEventFromId(eventId)
-                }
-            }
-            .addOnFailureListener { /* ignore */ }
-
-        // 3️⃣ Normal Intent
-        event = intent.getSerializableExtra("event") as? Event ?: return finish()
-
-        setupActivity()
-    }
-
-    private fun setupActivity() {
-        bindEventData()
-        listenToRSVPChanges()
-        setupSaveButton()
-        setupRSVPButtons()
-        setupGoogleDriveButton()
-        startCountdown()
-    }
-
-    private fun initViews() {
-        eventImage = findViewById(R.id.eventImage)
-        eventTitle = findViewById(R.id.eventTitle)
-        goingCount = findViewById(R.id.goingCount)
-        eventDate = findViewById(R.id.eventDate)
-        eventLocation = findViewById(R.id.eventLocation)
-        aboutDescription = findViewById(R.id.aboutDescription)
-        dietarySpinner = findViewById(R.id.dietarySpinner)
-        songInput = findViewById(R.id.songInput)
-        btnGoogleDrive = findViewById(R.id.btnGoogleDrive)
-        btnGoing = findViewById(R.id.btnGoing)
-        btnNotGoing = findViewById(R.id.btnNotGoing)
-        btnMaybe = findViewById(R.id.btnMaybe)
-        btnBack = findViewById(R.id.btnBack)
-        btnSavePreferences = findViewById(R.id.btnSavePreferences)
-        countdownTimer = findViewById(R.id.countdownTimer)
-    }
-
-    private fun loadEventFromId(eventId: String) {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("events").document(eventId).get()
-            .addOnSuccessListener { doc ->
-                val evt = doc.toObject(Event::class.java)?.apply { id = doc.id }
-                if (evt != null) {
-                    event = evt
-                    setupActivity()
-                } else {
-                    Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show()
+        // Fetch latest event data from Firestore
+        db.collection("events")
+            .document(eventFromIntent.id)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                snapshot.toObject(Event::class.java)?.let { fetchedEvent ->
+                    event = fetchedEvent
+                    bindEventData()
+                    loadPreferences()
+                    loadRSVPCount()
+                    startCountdown()
+                } ?: run {
+                    Toast.makeText(this, "Event not found in database", Toast.LENGTH_SHORT).show()
                     finish()
                 }
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Failed to load event: ${e.message}", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to load event details", Toast.LENGTH_SHORT).show()
                 finish()
             }
     }
 
+    private fun initViews() {
+        eventTitle = findViewById(R.id.eventTitle)
+        goingCount = findViewById(R.id.goingCount)
+        countdownTimer = findViewById(R.id.countdownTimer)
+        eventDate = findViewById(R.id.eventDate)
+        eventTime = findViewById(R.id.eventTime)
+        eventEndTime = findViewById(R.id.eventEndTime)
+        eventLocation = findViewById(R.id.eventLocation)
+        aboutDescription = findViewById(R.id.aboutDescription)
+        categoryText = findViewById(R.id.categoryText)
+        dietaryText = findViewById(R.id.dietaryText)
+        musicText = findViewById(R.id.musicText)
+        btnGoogleDrive = findViewById(R.id.btnGoogleDrive)
+        btnBack = findViewById(R.id.btnBack)
+    }
+
     private fun bindEventData() {
-        // Set basic event info
-        eventTitle.text = event.title ?: "No Title"
-        aboutDescription.text = event.description ?: "No Description"
-        eventDate.text = "${event.date ?: "TBD"} • ${event.time ?: "TBD"}"
-        eventLocation.text = event.location ?: "No Location"
-        goingCount.text = "🎉 ${event.attendeeCount ?: 0} people are going"
+        event?.let { ev ->
+            eventTitle.text = ev.title
+            aboutDescription.text = ev.description
+            eventDate.text = "Date: ${ev.date}"
+            eventTime.text = "Start: ${ev.time}"
+            eventEndTime.text = if (!ev.endTime.isNullOrBlank()) "End: ${ev.endTime}" else "End time not set"
+            eventLocation.text = "Location: ${ev.location}"
+            categoryText.text = "Category: ${ev.category}"
 
-        // Setup dietary requirements dropdown
-        val dietaryAdapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            event.dietaryRequirements ?: listOf()
-        )
-        dietarySpinner.setAdapter(dietaryAdapter)
-
-        // Display Google Drive link on the button
-        if (!event.googleDriveLink.isNullOrBlank()) {
-            btnGoogleDrive.text = "Open Google Drive Folder"
-            btnGoogleDrive.isEnabled = true
-        } else {
-            btnGoogleDrive.text = "No Google Drive Link"
-            btnGoogleDrive.isEnabled = false
+            if (!ev.googleDriveLink.isNullOrBlank()) {
+                btnGoogleDrive.text = "Open Google Drive Folder"
+                btnGoogleDrive.isEnabled = true
+                btnGoogleDrive.setOnClickListener {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(ev.googleDriveLink)))
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Cannot open link: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                btnGoogleDrive.text = "No Google Drive link available"
+                btnGoogleDrive.isEnabled = false
+            }
         }
+    }
+
+    private fun loadPreferences() {
+        val evId = event?.id
+        if (evId.isNullOrBlank()) return
+
+        db.collection("events")
+            .document(evId)
+            .collection("preferences")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val dietaryList = mutableListOf<String>()
+                val musicList = mutableListOf<String>()
+                snapshot.documents.forEach { doc ->
+                    doc.getString("dietaryChoice")?.let { dietaryList.add(it) }
+                    doc.getString("musicChoice")?.let { musicList.add(it) }
+                }
+                dietaryText.text = if (dietaryList.isNotEmpty())
+                    "Dietary Requirements: ${dietaryList.joinToString(", ")}"
+                else "No dietary preferences"
+                musicText.text = if (musicList.isNotEmpty())
+                    "Music Suggestions: ${musicList.joinToString(", ")}"
+                else "No music suggestions"
+            }
+    }
+
+    private fun loadRSVPCount() {
+        val evId = event?.id
+        if (evId.isNullOrBlank()) return
+
+        db.collection("events")
+            .document(evId)
+            .collection("rsvps")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val goingCountValue = snapshot.documents.count { it.getString("status") == "going" }
+                goingCount.text = "Attendees: $goingCountValue"
+            }
     }
 
     private fun startCountdown() {
-        countdownRunnable = object : Runnable {
-            override fun run() {
-                countdownTimer.text = getCountdownText(event.date, event.time)
-                handler.postDelayed(this, 60000)
+        event?.let { ev ->
+            countdownRunnable = object : Runnable {
+                override fun run() {
+                    countdownTimer.text = getCountdownText(ev.date, ev.time, ev.endTime)
+                    handler.postDelayed(this, 60000)
+                }
             }
+            handler.post(countdownRunnable)
         }
-        handler.post(countdownRunnable)
     }
 
-    private fun getCountdownText(date: String, time: String): String {
+    private fun getCountdownText(date: String, startTime: String, endTime: String?): String {
         return try {
             val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            val eventDateTime = format.parse("$date $time")
+            val eventStart = format.parse("$date $startTime")
+            val eventEnd = if (!endTime.isNullOrBlank()) format.parse("$date $endTime") else eventStart
             val now = Date()
-            val diff = eventDateTime.time - now.time
+            val diff = eventStart.time - now.time
             if (diff > 0) {
                 val days = TimeUnit.MILLISECONDS.toDays(diff)
                 val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
                 "$days days, $hours hours, $minutes minutes left"
+            } else if (eventEnd != null && now.time < eventEnd.time) {
+                "Event in progress until ${SimpleDateFormat("HH:mm", Locale.getDefault()).format(eventEnd)}"
             } else {
-                "Event started"
+                "Event ended"
             }
         } catch (e: Exception) {
             ""
         }
     }
 
-    private fun setupSaveButton() {
-        btnSavePreferences.setOnClickListener {
-            val dietaryChoice = dietarySpinner.text?.toString()?.trim()
-            val musicChoice = songInput.text?.toString()?.trim()
-
-            if (dietaryChoice.isNullOrEmpty() && musicChoice.isNullOrEmpty()) {
-                Toast.makeText(this, "Please enter at least one preference", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val userId = auth.currentUser?.uid ?: return@setOnClickListener
-            val db = FirebaseFirestore.getInstance()
-            val prefData = mapOf(
-                "dietaryChoice" to dietaryChoice,
-                "musicChoice" to musicChoice
-            )
-
-            db.collection("events")
-                .document(event.id!!)
-                .collection("preferences")
-                .document(userId)
-                .set(prefData)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Preferences saved successfully", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Failed to save preferences: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-        }
-    }
-
-    private fun setupRSVPButtons() {
-        btnGoing.setOnClickListener {
-            updateRSVPButtonsUI("going")
-            sendRSVP("going")
-        }
-        btnNotGoing.setOnClickListener {
-            updateRSVPButtonsUI("notGoing")
-            sendRSVP("notGoing")
-        }
-        btnMaybe.setOnClickListener {
-            updateRSVPButtonsUI("maybe")
-            sendRSVP("maybe")
-        }
-    }
-
-    private fun listenToRSVPChanges() {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("events")
-            .document(event.id!!)
-            .collection("rsvps")
-            .addSnapshotListener { snapshot, error ->
-                if (error != null) return@addSnapshotListener
-                if (snapshot != null) {
-                    val goingCountValue = snapshot.documents.count { it.getString("status") == "going" }
-                    goingCount.text = "🎉 $goingCountValue people are going"
-                }
-            }
-    }
-
-    private fun sendRSVP(status: String) {
-        val user = auth.currentUser ?: return
-        val userId = user.uid
-        val db = FirebaseFirestore.getInstance()
-
-        val prefData = mapOf(
-            "dietaryChoice" to dietarySpinner.text?.toString(),
-            "musicChoice" to songInput.text?.toString()
-        )
-        db.collection("events").document(event.id!!).collection("preferences")
-            .document(userId).set(prefData)
-
-        val rsvpData = mapOf("status" to status)
-        db.collection("events").document(event.id!!).collection("rsvps")
-            .document(userId).set(rsvpData)
-            .addOnSuccessListener {
-                Toast.makeText(this, "RSVP updated: $status", Toast.LENGTH_SHORT).show()
-                disableRSVPButtons()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Failed to update RSVP: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun disableRSVPButtons() {
-        btnGoing.isEnabled = false
-        btnNotGoing.isEnabled = false
-        btnMaybe.isEnabled = false
-    }
-
-    private fun updateRSVPButtonsUI(selectedStatus: String) {
-        btnGoing.setBackgroundColor(resources.getColor(R.color.gray))
-        btnGoing.setTextColor(resources.getColor(android.R.color.white))
-
-        btnNotGoing.setBackgroundColor(resources.getColor(R.color.white))
-        btnNotGoing.setTextColor(resources.getColor(android.R.color.black))
-
-        btnMaybe.setBackgroundColor(resources.getColor(R.color.gray))
-        btnMaybe.setTextColor(resources.getColor(android.R.color.white))
-
-        when (selectedStatus) {
-            "going" -> btnGoing.setBackgroundColor(resources.getColor(R.color.going_green))
-            "notGoing" -> btnNotGoing.setBackgroundColor(resources.getColor(R.color.notgoing_red_dark))
-            "maybe" -> btnMaybe.setBackgroundColor(resources.getColor(R.color.mustard_yellow))
-        }
-    }
-
-    private fun setupGoogleDriveButton() {
-        btnGoogleDrive.setOnClickListener {
-            val link = event.googleDriveLink
-            if (!link.isNullOrBlank()) {
-                try {
-                    // Always open in browser to avoid Drive app errors
-                    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                    startActivity(browserIntent)
-                } catch (e: Exception) {
-                    Toast.makeText(this, "Cannot open link: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(this, "No Google Drive link available", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(countdownRunnable)
+        if (::countdownRunnable.isInitialized) handler.removeCallbacks(countdownRunnable)
     }
 }
