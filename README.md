@@ -1,6 +1,9 @@
 # Toast
 Toast is a mobile application designed for social groups and university students to plan, share, and manage events seamlessly. The app enables private event creation, group interaction, RSVP tracking, and media sharing — all supported by a secure backend API.
-<img width="500" height="500" alt="toast_logo" src="https://github.com/user-attachments/assets/c74a8818-1795-472a-84e8-6cc9c2aaa498" />
+<div align="center">
+  <img width="500" height="500" alt="toast_logo" src="https://github.com/user-attachments/assets/c74a8818-1795-472a-84e8-6cc9c2aaa498" />
+</div>
+
 
 
 ## 1: Requirements
@@ -119,3 +122,8 @@ The app will be published on the Google Play Store for public download.
 * Render Documentation: (https://render.com)
 * Firebase Documentation: (https://firebase.google.com)
 * Android Developers Documentation: (https://developer.android.com)
+
+---
+
+## AI Usage
+ChatGPT was used to fix .xml layout files to ensure consistency throughout the application. It was used to assist with error problems that occured when running the app by specifying which file had the problem. It was used to fix colours, misspelled code linking etc. 
