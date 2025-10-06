@@ -1,0 +1,41 @@
+name: Generated APK AAB (Upload - Create Artifact To Github Action)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout your code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Java for Gradle
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # Step 3: Set up Gradle (predefined GitHub Action)
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          arguments: |
+            assembleDebug
+            bundleDebug
+
+      # Step 4: Upload the generated APK and AAB files as GitHub Artifacts
+      - name: Upload APK & AAB Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-builds
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/bundle/debug/*.aab
