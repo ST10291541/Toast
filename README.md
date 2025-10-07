@@ -49,9 +49,9 @@ The following is how the application works:
 * **RSVP & Attendance Tracking:**  
   Users can RSVP to events (Going, Not Going, Maybe).
 
-  <p align="center">
-    <img src="https://github.com/user-attachments/assets/af3cff4f-63f0-4bac-9fdb-cfb878d41a4f" alt="rsvp_tracking" width="400" style="border-radius: 10px;"/>
-  </p>
+  <div align="center">
+    <img width="500" height="500" alt="toast_logo" src="https://github.com/user-attachments/assets/180636e3-6b5f-4887-9368-0471d6db5aa4" />
+  </div>
 
 * **Media Sharing:**  
   Users can access and share images and videos taken throughout the events via a Google Drive link that the host creates during event creation. This link can only be accessible to guests once the user has created the Google Drive folder as well as the event.  
@@ -90,7 +90,7 @@ The following are the app’s features:
   Guests are sent an RSVP form where they can notify the host if they are attending or not, with a live attendee count that updates automatically.
 
   <p align="center">
-    <img src="https://github.com/user-attachments/assets/ff68a01e-048d-4101-a9a0-1c5477d6eafe" alt="rsvp_form" width="400" style="border-radius: 10px;"/>
+    <img src="https://github.com/user-attachments/assets/af3cff4f-63f0-4bac-9fdb-cfb878d41a4f" alt="rsvp_tracking" width="400" style="border-radius: 10px;"/>
   </p>
 
 * **Poll:**  
