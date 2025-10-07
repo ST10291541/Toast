@@ -5,7 +5,6 @@ Toast is a mobile application designed for social groups and university students
 </div>
 
 
-
 ## 1: Requirements
 
 You will require the following in order to use this application:
@@ -41,8 +40,16 @@ The following is how the application works:
 * **Event Management:**
   Users can create, edit, and delete private events with details such as name, description, category, location, and preferences.
 
+  <div align="center">
+    <img width="500" height="500" alt="toast_logo" src="https://github.com/user-attachments/assets/740a3a6d-6963-453a-a5a8-952937537ea1" />
+  </div>
+
 * **RSVP & Attendance Tracking:**
   Users can RSVP to events (Going, Not Going, Maybe).
+
+  <div align="center">
+    <img width="500" height="500" alt="toast_logo" src="https://github.com/user-attachments/assets/180636e3-6b5f-4887-9368-0471d6db5aa4" />
+  </div>
 
 * **Media Sharing:**
   Users can access and share images and videos taken throughout the events via a Google Drive link that the host creates during event creation. This link can only be accessible to guests once the user has created the google drive folder as well as the event. 
@@ -79,6 +86,10 @@ The following is the features:
 
 * **RSVP Form:**
   Guests are sent a RSVP formn where they can notify the host if they are attening or not and a live attendee count updates.
+  <div align="center">
+    <img width="500" height="500" alt="toast_logo" src="https://github.com/user-attachments/assets/ff68a01e-048d-4101-a9a0-1c5477d6eafe" />
+  </div>
+  
 
 * **Poll:**
   Users can create a dietary requirements poll as well as a music suggestiosn poll so guests to interact with.
