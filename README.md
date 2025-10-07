@@ -1,8 +1,9 @@
 # Toast
+
 Toast is a mobile application designed for social groups and university students to plan, share, and manage events seamlessly. The app enables private event creation, group interaction, RSVP tracking, and media sharing — all supported by a secure backend API.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c74a8818-1795-472a-84e8-6cc9c2aaa498" alt="toast_logo" width="400" style="border-radius: 10px;"/>
+  <img src="https://github.com/user-attachments/assets/c74a8818-1795-472a-84e8-6cc9c2aaa498" alt="toast_logo" width="420" style="border-radius: 10px;"/>
 </p>
 
 ---
@@ -34,33 +35,33 @@ This is how the application can be installed and used:
 
 ## 3: Functionality
 
-The following is how the application works:
+The following describes how the application works:
 
 * **Secure Authentication:**  
-  Users can register and log in via Google Single Sign-On (Firebase Auth), normal Email/Password Authentication, or Biometric login.
+  Users can register and log in via Google Single Sign-On (Firebase Auth), Email/Password Authentication, or Biometric login.
 
 * **Event Management:**  
   Users can create, edit, and delete private events with details such as name, description, category, location, and preferences.
 
   <p align="center">
-    <img src="https://github.com/user-attachments/assets/740a3a6d-6963-453a-a5a8-952937537ea1" alt="event_management" width="400" style="border-radius: 10px;"/>
+    <img src="https://github.com/user-attachments/assets/740a3a6d-6963-453a-a5a8-952937537ea1" alt="event_management" width="420" style="border-radius: 10px;"/>
   </p>
 
 * **RSVP & Attendance Tracking:**  
   Users can RSVP to events (Going, Not Going, Maybe).
 
-  <div align="center">
-    <img width="500" height="500" alt="toast_logo" src="https://github.com/user-attachments/assets/180636e3-6b5f-4887-9368-0471d6db5aa4" />
-  </div>
+  <p align="center">
+    <img src="https://github.com/user-attachments/assets/180636e3-6b5f-4887-9368-0471d6db5aa4" alt="rsvp_tracking" width="420" style="border-radius: 10px;"/>
+  </p>
 
 * **Media Sharing:**  
-  Users can access and share images and videos taken throughout the events via a Google Drive link that the host creates during event creation. This link can only be accessible to guests once the user has created the Google Drive folder as well as the event.  
+  Users can access and share images and videos taken throughout events via a Google Drive link created by the host during event setup. This link is accessible to guests once the event and Drive folder are created.  
 
 * **Notifications:**  
   Users receive updates for RSVP changes, event edits, and group activity.
 
 * **Event Sharing:**  
-  Users can copy the link generated during event creation and share it with others.  
+  Users can copy and share a unique event link with anyone they choose.
 
 * **Profile & Settings:**  
   Users can update personal details, change passwords, or delete their account.
@@ -69,41 +70,41 @@ The following is how the application works:
 
 ## 4: Non-Functional Requirements
 
-These are how the system performs:
+These define how the system performs:
 
 * Provides a stable and responsive user experience with minimal downtime.  
 * Follows RESTful API standards for efficient communication between app and backend.  
-* Secure authentication and data handling through Firebase Auth and Firestore.  
-* Hosting on Render ensures availability and scalability of the backend API.  
+* Secure authentication and data handling via Firebase Auth and Firestore.  
+* Backend hosted on Render for availability and scalability.  
 * User-friendly interface with clear navigation between screens.  
 
 ---
 
 ## 5: Features
 
-The following are the app’s features:
+The following are the app’s main features:
 
 * **Google Drive Link:**  
-  Users can share their Google Drive folder link, and guests can upload images to that link.
+  Users can share their Google Drive folder link, allowing guests to upload event photos or videos.
 
 * **RSVP Form:**  
   Guests are sent an RSVP form where they can notify the host if they are attending or not, with a live attendee count that updates automatically.
 
   <p align="center">
-    <img src="https://github.com/user-attachments/assets/af3cff4f-63f0-4bac-9fdb-cfb878d41a4f" alt="rsvp_tracking" width="400" style="border-radius: 10px;"/>
+    <img src="https://github.com/user-attachments/assets/af3cff4f-63f0-4bac-9fdb-cfb878d41a4f" alt="rsvp_form" width="420" style="border-radius: 10px;"/>
   </p>
 
-* **Poll:**  
+* **Polls:**  
   Users can create dietary requirement polls and music suggestion polls for guest interaction.
 
 * **Countdown:**  
-  Users are notified with a live countdown showing how many days, hours, and minutes remain until the event.
+  Users are shown a live countdown displaying the days, hours, and minutes remaining until the event.
 
 ---
 
 ## 6: Credits
 
-This application was created by **The Toast Team**
+This application was created by **The Toast Team:**
 
 * Angenalise Elisha Stephen  
 * Annabel Govender  
@@ -118,12 +119,13 @@ This application was created by **The Toast Team**
 The app will be published on the Google Play Store for public download.
 
 * Users will be able to access the app easily, receive automatic updates, and view app ratings and screenshots.  
-* Play Store listing will include a full description, screenshots, and promotional content.
+* The Play Store listing will include a full description, screenshots, and promotional content.
 
 ---
 
 ## 8: GitHub Link
-[App Repository](https://github.com/ST10291541/Technovate)
+
+🔗 [App Repository](https://github.com/ST10291541/Technovate)
 
 ---
 
@@ -140,4 +142,4 @@ The app will be published on the Google Play Store for public download.
 
 ## AI Usage
 
-ChatGPT was used to fix `.xml` layout files to ensure consistency throughout the application. It was also used to assist with debugging errors during app execution, fixing color inconsistencies, and resolving code linking issues.
+ChatGPT was used to correct `.xml` layout files for consistency, assist with debugging runtime errors, fix color inconsistencies, and resolve code linking issues throughout the application.
