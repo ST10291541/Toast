@@ -50,7 +50,7 @@ The following is how the application works:
   Users can RSVP to events (Going, Not Going, Maybe).
 
   <p align="center">
-    <img src="https://github.com/user-attachments/assets/180636e3-6b5f-4887-9368-0471d6db5aa4" alt="rsvp_tracking" width="400" style="border-radius: 10px;"/>
+    <img src="https://github.com/user-attachments/assets/af3cff4f-63f0-4bac-9fdb-cfb878d41a4f" alt="rsvp_tracking" width="400" style="border-radius: 10px;"/>
   </p>
 
 * **Media Sharing:**  
