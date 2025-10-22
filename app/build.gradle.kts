@@ -78,4 +78,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     implementation("com.google.firebase:firebase-dynamic-links-ktx:21.1.0")
+
+    //biometrics
+    implementation("androidx.biometric:biometric:1.1.0")
+    implementation("com.google.code.gson:gson:2.8.9")
 }

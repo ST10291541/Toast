@@ -45,6 +45,17 @@
             android:textColor="#555555"
             android:layout_marginTop="8dp" />
 
+        <!-- Use Biometrics Text -->
+        <TextView
+            android:id="@+id/use_biometrics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/use_biometrics"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#0000EE"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
         <!-- Divider with Or -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -115,7 +126,7 @@
             android:id="@+id/btnRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don’t have an account? Sign Up"
+            android:text="Don't have an account? Sign Up"
             android:textColor="#0000EE"
             android:background="@android:color/transparent"
             android:layout_marginTop="8dp"

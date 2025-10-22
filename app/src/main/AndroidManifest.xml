@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <meta-data
         android:name="com.google.android.gms.version"
         android:value="@integer/google_play_services_version" />
@@ -32,6 +33,9 @@
             android:exported="false" />
         <activity
             android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EnableBiometricLoginActivity"
             android:exported="false" />
         <activity
             android:name=".DashboardActivity"
