@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class DashboardActivity : AppCompatActivity() {
 
     private lateinit var tvUserName: TextView
+    private lateinit var tvEventCount: TextView
     private lateinit var imgProfile: ImageView
     private lateinit var auth: FirebaseAuth
 
@@ -46,6 +47,7 @@ class DashboardActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         tvUserName = findViewById(R.id.tvUserName)
+        tvEventCount = findViewById(R.id.tvEventCount)
         imgProfile = findViewById(R.id.imgProfile)
 
         val db = FirebaseFirestore.getInstance()
@@ -126,8 +128,8 @@ class DashboardActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.chipParty).setOnClickListener { filterEventsByCategory("Party") }
         findViewById<LinearLayout>(R.id.chipFood).setOnClickListener { filterEventsByCategory("Food") }
         findViewById<LinearLayout>(R.id.chipArt).setOnClickListener { filterEventsByCategory("Art") }
-        findViewById<LinearLayout>(R.id.chipMeet).setOnClickListener { filterEventsByCategory("Art") }
-        findViewById<LinearLayout>(R.id.chipGeneral).setOnClickListener { filterEventsByCategory("Art") }
+        findViewById<LinearLayout>(R.id.chipMeet).setOnClickListener { filterEventsByCategory("Meet-Up") }
+        findViewById<LinearLayout>(R.id.chipGeneral).setOnClickListener { filterEventsByCategory("General") }
 
         // 🔹 Load events from Firestore
         loadEvents()
@@ -136,6 +138,7 @@ class DashboardActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         refreshUserProfile()
+        loadEvents() // Reload events when returning to dashboard
     }
 
     private fun refreshUserProfile() {
@@ -204,6 +207,7 @@ class DashboardActivity : AppCompatActivity() {
                 filteredEvents.clear()
                 filteredEvents.addAll(allEvents)
                 eventAdapter.updateData(filteredEvents, eventGuestMap)
+                updateEventCount()
 
                 // 🔹 Load RSVP guest data for each event
                 loadGuestDataForEvents()
@@ -232,13 +236,24 @@ class DashboardActivity : AppCompatActivity() {
 
                     eventGuestMap[event.id] = guests
                     eventAdapter.updateData(filteredEvents, eventGuestMap)
+                    updateEventCount()
                 }
         }
     }
 
     private fun filterEventsByCategory(category: String) {
         filteredEvents.clear()
-        filteredEvents.addAll(allEvents.filter { it.category == category })
+        if (category == "All") {
+            filteredEvents.addAll(allEvents)
+        } else {
+            filteredEvents.addAll(allEvents.filter { it.category.equals(category, ignoreCase = true) })
+        }
         eventAdapter.updateData(filteredEvents, eventGuestMap)
+        updateEventCount()
+    }
+
+    private fun updateEventCount() {
+        val count = filteredEvents.size
+        tvEventCount.text = "(${count} ${if (count == 1) "event" else "events"})"
     }
 }

@@ -153,6 +153,7 @@
                     android:background="@drawable/chip_blue"
                     android:paddingHorizontal="16dp"
                     android:paddingVertical="8dp"
+                    android:layout_marginEnd="12dp"
                     android:elevation="3dp">
                     <ImageView
                         android:layout_width="16dp"
@@ -230,6 +231,32 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
+
+                <!-- Events Section Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="My Events"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tvEventCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="(0 events)"
+                        android:textSize="14sp"
+                        android:textColor="#666666" />
+                </LinearLayout>
 
                 <!-- RecyclerView -->
                 <androidx.recyclerview.widget.RecyclerView
