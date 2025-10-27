@@ -22,8 +22,8 @@
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="56dp"
+            android:layout_height="51dp"
             android:background="@drawable/circle_white_bg"
             android:contentDescription="Go back"
             android:src="@drawable/ic_arrow_back" />
@@ -173,7 +173,102 @@
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             app:cornerRadius="12dp"
-            app:backgroundTint="#FF5722"/> <!-- Orange-red color -->
+            app:backgroundTint="#FF5722"/>
+
+        <!-- Language Selection -->
+        <TextView
+            android:id="@+id/tvSelectLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select App Language"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/spinnerLanguages"
+            android:layout_width="match_parent"
+            android:layout_height="59dp"
+            android:spinnerMode="dropdown" />
+
+        <!-- 🌍 Translation Section -->
+        <TextView
+            android:id="@+id/translationHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Language Translator"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="32dp"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/inputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Type text to translate"
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_bg"
+            android:inputType="textMultiLine"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp"
+            android:weightSum="2">
+
+            <Spinner
+                android:id="@+id/spinnerFrom"
+                android:layout_width="0dp"
+                android:layout_height="58dp"
+                android:layout_weight="1"
+                android:spinnerMode="dropdown" />
+
+            <Spinner
+                android:id="@+id/spinnerTo"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:spinnerMode="dropdown" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTranslate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Translate"
+            android:layout_marginTop="16dp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="#C8A951"
+            android:textColor="@android:color/white"/>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/translatedText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Translated text will appear here"
+            android:textColor="@android:color/darker_gray"
+            android:padding="8dp"
+            android:background="@drawable/edit_text_bg"
+            android:textSize="16sp"
+            android:gravity="center"/>
+
+        <!-- Orange-red color -->
         </LinearLayout>
     </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

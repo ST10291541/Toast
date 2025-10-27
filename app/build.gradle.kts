@@ -40,6 +40,9 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+
+
 }
 
 dependencies {
@@ -82,4 +85,7 @@ dependencies {
     //biometrics
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("com.google.code.gson:gson:2.8.9")
+
+    // ML Kit on-device Translate
+    implementation("com.google.mlkit:translate:17.0.3")
 }

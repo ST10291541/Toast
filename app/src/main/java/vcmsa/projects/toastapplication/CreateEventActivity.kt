@@ -48,7 +48,7 @@ class CreateEventActivity : AppCompatActivity() {
         initViews()
         setupCreateEventButton()
 
-        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
+        findViewById<ImageButton>(R.id.backArrow).setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
             finish()
         }
@@ -63,10 +63,10 @@ class CreateEventActivity : AppCompatActivity() {
         diet2Et = findViewById(R.id.diet2)
         musicPollCb = findViewById(R.id.musicPollCheckbox)
         googleDriveEt = findViewById(R.id.googleDriveLink)
-        createEventBtn = findViewById(R.id.createEventBtn)
+        createEventBtn = findViewById(R.id.btnCreateEvent)
         btnPickDate = findViewById(R.id.btnPickDate)
-        btnPickTime = findViewById(R.id.btnPickTime)
-        contentLayout = findViewById(R.id.contentLayout)
+       btnPickTime = findViewById(R.id.btnPickTime)
+       contentLayout = findViewById(R.id.contentLayout)
 
         btnPickDate.setOnClickListener { showDatePicker() }
         btnPickTime.setOnClickListener { showTimePicker() }
