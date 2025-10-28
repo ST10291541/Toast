@@ -40,9 +40,6 @@ android {
     buildFeatures {
         viewBinding = true
     }
-
-
-
 }
 
 dependencies {
@@ -63,6 +60,12 @@ dependencies {
 
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+
+    // Firebase Messaging
+    implementation("com.google.firebase:firebase-messaging-ktx")
+
+// Firebase Core
+    implementation("com.google.firebase:firebase-analytics-ktx")
 
     // add the dependencies for Firebase Authentication and Cloud Firestore
     implementation("com.google.firebase:firebase-auth")
@@ -85,7 +88,4 @@ dependencies {
     //biometrics
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("com.google.code.gson:gson:2.8.9")
-
-    // ML Kit on-device Translate
-    implementation("com.google.mlkit:translate:17.0.3")
 }

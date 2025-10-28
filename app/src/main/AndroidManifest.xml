@@ -9,6 +9,8 @@
         android:name="com.google.android.gms.version"
         android:value="@integer/google_play_services_version" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/toast_logo"
@@ -53,7 +55,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+
+        <activity android:name=".MainActivity" android:exported="false" />
+        <!-- Firebase Messaging Service -->
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+
+
+
     </application>
 
 </manifest>
