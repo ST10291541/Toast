@@ -1,30 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ToastApplication</string>
-
-    <string-array name="dietary_options">
-        <item>Vegetaries</item>
-        <item>Vegan</item>
-        <item>Halal</item>
-        <item>Kosher</item>
-        <item>Geen voorkeur nie</item>
-    </string-array>
-
-    <!-- Authentication -->
-    <string name="prompt_info_title">Toast-verifikasie</string>
-    <string name="prompt_info_subtitle">Meld aan om toegang te kry</string>
-    <string name="prompt_info_description">Toast gebruik Android-biometriese verifikasie</string>
-    <string name="prompt_info_use_app_password">Gebruik toepwagwoord</string>
-    <string name="use_biometrics">Gebruik biometrie</string>
-    <string name="enable_biometric_login">Skakel biometriese aanmelding aan</string>
-    <string name="desc_biometrics_authorization">Voer jou aanmeld-ID en wagwoord in om aktivering van biometriese aanmelding te bevestig.</string>
-    <string name="btn_authorize">Magtig</string>
-
-    <!-- Profile / Settings -->
     <string name="edit_profile">Wysig Profiel</string>
     <string name="go_back">Gaan terug</string>
     <string name="edit_picture">Wysig prent</string>
-    <string name="hint_first_name">Voornaam</string>
+    <string name="hint_first_name">Naam</string>
     <string name="hint_last_name">Van</string>
     <string name="hint_phone">Telefoonnommer</string>
     <string name="save_details">Stoor Besonderhede</string>
@@ -32,8 +11,6 @@
     <string name="select_app_language">Kies Toepassings Taal</string>
     <string name="delete_account">Skrap Rekening</string>
     <string name="logout">Teken uit</string>
-
-    <!-- Messages -->
     <string name="must_be_signed_in">Jy moet aangemeld wees om die profiel te wysig.</string>
     <string name="no_user_signed_in">Geen gebruiker aangemeld nie</string>
     <string name="delete_account_title">Skrap Rekening</string>
@@ -44,12 +21,12 @@
     <string name="please_login_again_delete">Meld asseblief weer aan om jou rekening te skrap</string>
     <string name="failed_delete_account">Kon nie rekening skrap nie: %1$s</string>
     <string name="select_profile_picture">Kies profielfoto</string>
-    <string name="enter_first_name">Voer voornaam in</string>
-    <string name="saving">Stoor</string>
-    <string name="error_saving">Fout tydens stoor: </string>
+    <string name="enter_first_name">Voer naam in</string>
+    <string name="saving">Stoor...</string>
+    <string name="error_saving">Fout tydens stoor: %1$s</string>
     <string name="profile_saved">Profiel gestoor</string>
 
-    <!-- Dashboard -->
+    <!-- Dashboard (Afrikaans) -->
     <string name="dashboard_my_events">My Geleenthede</string>
     <string name="dashboard_more_actions">Meer Aksies</string>
     <string name="dashboard_create_event">Skep Geleentheid</string>
@@ -66,7 +43,7 @@
     <string name="chip_general">Algemeen</string>
     <string name="guest">Gas</string>
     <string name="user_fallback">Gebruiker</string>
-    <string name="failed_to_load_events">Kon nie geleenthede laai nie: </string>
+    <string name="failed_to_load_events">Kon nie geleenthede laai nie: %1$s</string>
     <string name="status_not_set">Nie gestel nie</string>
     <string name="not_specified">Nie gespesifiseer nie</string>
     <plurals name="events_count">
@@ -74,7 +51,17 @@
         <item quantity="other">(%d geleenthede)</item>
     </plurals>
 
-    <!-- Login/Register -->
+    <!-- Biometric / Auth (Afrikaans) -->
+    <string name="prompt_info_title">Toast-verifikasie</string>
+    <string name="prompt_info_subtitle">Meld aan om toegang te kry</string>
+    <string name="prompt_info_description">Toast gebruik Android-biometriese verifikasie</string>
+    <string name="prompt_info_use_app_password">Gebruik toepwagwoord</string>
+    <string name="use_biometrics">Gebruik biometrie</string>
+    <string name="enable_biometric_login">Skakel biometriese aanmelding aan</string>
+    <string name="desc_biometrics_authorization">Voer jou aanmeld-ID en wagwoord in om aktivering van biometriese aanmelding te bevestig.</string>
+    <string name="btn_authorize">Magtig</string>
+
+    <!-- Login/Register (Afrikaans) -->
     <string name="login_title">Meld aan</string>
     <string name="login_face_label">Meld aan met jou Face ID</string>
     <string name="or_text">Of</string>
@@ -89,13 +76,14 @@
     <string name="cancel_cap">Kanselleer</string>
     <string name="already_have_account">Het reeds ’n rekening</string>
 
-    <!-- Event Details -->
+    <!-- Event Details (Afrikaans) -->
     <string name="attendees_label">Bywoners: %1$d</string>
     <string name="about_this_event">Oor hierdie Geleentheid</string>
     <string name="guest_list">Gaste Lys</string>
     <string name="view_event_photos">Sien Geleentheid-foto’s (Google Drive)</string>
+    <string name="event_image_content_description">Geleentheid banierbeeld</string>
 
-    <!-- Create Event -->
+    <!-- Create Event (Afrikaans) -->
     <string name="back">Terug</string>
     <string name="event_name_hint">Geleentheid Naam</string>
     <string name="enter_event_description">Voer Geleentheid-beskrywing in</string>
@@ -109,8 +97,10 @@
     <string name="music_suggestions">Musiek Voorstelle</string>
     <string name="insert_google_drive_link">Voeg Google Drive-skakel in</string>
     <string name="create_event">Skep Geleentheid</string>
-    <string name="all_events_count">Alle Geleenthede</string>
+    <string name="all_events_count">Alle Geleenthede (%1$d)</string>
     <string name="empty_no_events">Geen Geleenthede Nog nie</string>
     <string name="empty_create_first">Skep jou eerste geleentheid om te begin</string>
     <string name="create_new_event">Skep nuwe geleentheid</string>
 </resources>
+
+

@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
@@ -24,7 +25,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:contentDescription="@string/about_this_event"
+                android:contentDescription="@string/event_image_content_description"
                 android:src="@drawable/event3"
                 app:layout_collapseMode="parallax" />
 
@@ -70,7 +71,8 @@
                 android:textColor="@color/dark_gray"
                 android:textSize="14sp"
                 android:layout_marginTop="4dp"
-                android:text="@string/attendees_label"/>
+                android:text=""
+                tools:text="@string/attendees_label" />
 
             <!-- Date & Location -->
             <TextView
