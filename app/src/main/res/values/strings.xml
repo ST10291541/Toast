@@ -77,7 +77,7 @@
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="login_button">Login</string>
-    <string name="signup_prompt">Don&#39;t have an account? Sign Up</string>
+    <string name="signup_prompt">Don\'t have an account? Sign Up</string>
 
     <!-- Register -->
     <string name="create_account">Create Account</string>

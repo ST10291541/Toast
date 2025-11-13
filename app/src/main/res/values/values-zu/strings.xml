@@ -1,5 +1,22 @@
 <resources>
     <string name="app_name">ToastApplication</string>
+    <string name="default_web_client_id">AIzaSyCdG2D_sXlDWu5KIuik-MPZ0otrewHRu2A</string>
+    <string-array name="dietary_options">
+        <item>Vegetarian</item>
+        <item>Vegan</item>
+        <item>Halal</item>
+        <item>Kosher</item>
+        <item>Akukho Okukhethiwe</item>
+    </string-array>
+    <string name="prompt_info_title">Ukuqinisekisa kwe-Toast</string>
+    <string name="prompt_info_subtitle">Sicela ungene ukuze uthole ukufinyelela</string>
+    <string name="prompt_info_description">I-Toast isebenzisa ukuqinisekisa kwe-biometric kwe-Android</string>
+    <string name="prompt_info_use_app_password">Sebenzisa iphasiwedi yohlelo</string>
+    <string name="use_biometrics">Sebenzisa i-biometric</string>
+    <string name="enable_biometric_login">Vumela ukungena nge-biometric</string>
+    <string name="desc_biometrics_authorization">Faka i-ID yokungena nephasiwedi ukuqinisekisa ukuvulwa kokungena nge-biometric.</string>
+    <string name="btn_authorize">Gunyaza</string>
+    <!-- Profile / Settings -->
     <string name="edit_profile">Hlela Iphrofayela</string>
     <string name="go_back">Buyela emuva</string>
     <string name="edit_picture">Hlela isithombe</string>
@@ -11,6 +28,8 @@
     <string name="select_app_language">Khetha Ulimi Lohlelo</string>
     <string name="delete_account">Cisha I-akhawunti</string>
     <string name="logout">Phuma</string>
+
+    <!-- Messages -->
     <string name="must_be_signed_in">Kufanele ungene ukuze uhlela iphrofayela.</string>
     <string name="no_user_signed_in">Akekho umsebenzisi ongene</string>
     <string name="delete_account_title">Cisha I-akhawunti</string>
@@ -26,7 +45,7 @@
     <string name="error_saving">Iphutha ngesikhathi sokulondoloza: %1$s</string>
     <string name="profile_saved">Iphrofayela ilondoloziwe</string>
 
-    <!-- Dashboard (Zulu) -->
+    <!-- Dashboard (localized) -->
     <string name="dashboard_my_events">Imicimbi Yami</string>
     <string name="dashboard_more_actions">Izenzo Eziningi</string>
     <string name="dashboard_create_event">Dala Umcimbi</string>
@@ -51,17 +70,7 @@
         <item quantity="other">(%d imicimbi)</item>
     </plurals>
 
-    <!-- Biometric / Auth (Zulu) -->
-    <string name="prompt_info_title">Ukuqinisekisa kwe-Toast</string>
-    <string name="prompt_info_subtitle">Sicela ungene ukuze uthole ukufinyelela</string>
-    <string name="prompt_info_description">I-Toast isebenzisa ukuqinisekisa kwe-biometric kwe-Android</string>
-    <string name="prompt_info_use_app_password">Sebenzisa iphasiwedi yohlelo</string>
-    <string name="use_biometrics">Sebenzisa i-biometric</string>
-    <string name="enable_biometric_login">Vumela ukungena nge-biometric</string>
-    <string name="desc_biometrics_authorization">Faka i-ID yokungena nephasiwedi ukuqinisekisa ukuvulwa kokungena nge-biometric.</string>
-    <string name="btn_authorize">Gunyaza</string>
-
-    <!-- Login/Register (Zulu) -->
+    <!-- Login -->
     <string name="login_title">Ngena</string>
     <string name="login_face_label">Ngena nge-Face ID yakho</string>
     <string name="or_text">Noma</string>
@@ -69,6 +78,8 @@
     <string name="password_hint">Iphasiwedi</string>
     <string name="login_button">Ngena</string>
     <string name="signup_prompt">Awunayo i-akhawunti? Bhalisa</string>
+
+    <!-- Register -->
     <string name="create_account">Dala i-akhawunti</string>
     <string name="add_photo">Nezela isithombe</string>
     <string name="password_rules">*Iphasiwedi kufanele ibe phakathi kuka-6 no-12 izinhlamvu, ihlanganise uphawu olukhethekile, okukhulu, okuncane kanye nenombolo</string>
@@ -76,14 +87,14 @@
     <string name="cancel_cap">Khansela</string>
     <string name="already_have_account">Usunayo i-akhawunti</string>
 
-    <!-- Event Details (Zulu) -->
+    <!-- Event Details -->
     <string name="attendees_label">Ababekhona: %1$d</string>
     <string name="about_this_event">Mayelana nalo Mcimbi</string>
     <string name="guest_list">Uhlu lwezivakashi</string>
     <string name="view_event_photos">Buka Izithombe Zomcimbi (Google Drive)</string>
     <string name="event_image_content_description">Isithombe sebhena yomcimbi</string>
 
-    <!-- Create Event (Zulu) -->
+    <!-- Create Event -->
     <string name="back">Emuva</string>
     <string name="event_name_hint">Igama Lomcimbi</string>
     <string name="enter_event_description">Faka Incazelo Yomcimbi</string>
@@ -97,10 +108,10 @@
     <string name="music_suggestions">Iziphakamiso Zomculo</string>
     <string name="insert_google_drive_link">Faka isixhumanisi se-Google Drive</string>
     <string name="create_event">Dala Umcimbi</string>
+
+    <!-- My Events -->
     <string name="all_events_count">Yonke Imicimbi (%1$d)</string>
     <string name="empty_no_events">Ayikho Imicimbi Okwamanje</string>
     <string name="empty_create_first">Dala umcimbi wokuqala ukuze uqale</string>
     <string name="create_new_event">Dala umcimbi omusha</string>
 </resources>
-
-

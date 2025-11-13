@@ -1,5 +1,22 @@
 <resources>
     <string name="app_name">ToastApplication</string>
+    <string name="default_web_client_id">AIzaSyCdG2D_sXlDWu5KIuik-MPZ0otrewHRu2A</string>
+    <string-array name="dietary_options">
+        <item>Vegetarian</item>
+        <item>Vegan</item>
+        <item>Halal</item>
+        <item>Kosher</item>
+        <item>Geen Voorkeur</item>
+    </string-array>
+    <string name="prompt_info_title">Toast-verifikasie</string>
+    <string name="prompt_info_subtitle">Meld aan om toegang te kry</string>
+    <string name="prompt_info_description">Toast gebruik Android-biometriese verifikasie</string>
+    <string name="prompt_info_use_app_password">Gebruik toepwagwoord</string>
+    <string name="use_biometrics">Gebruik biometrie</string>
+    <string name="enable_biometric_login">Skakel biometriese aanmelding aan</string>
+    <string name="desc_biometrics_authorization">Voer jou aanmeld-ID en wagwoord in om aktivering van biometriese aanmelding te bevestig.</string>
+    <string name="btn_authorize">Magtig</string>
+    <!-- Profile / Settings -->
     <string name="edit_profile">Wysig Profiel</string>
     <string name="go_back">Gaan terug</string>
     <string name="edit_picture">Wysig prent</string>
@@ -11,6 +28,8 @@
     <string name="select_app_language">Kies Toepassings Taal</string>
     <string name="delete_account">Skrap Rekening</string>
     <string name="logout">Teken uit</string>
+
+    <!-- Messages -->
     <string name="must_be_signed_in">Jy moet aangemeld wees om die profiel te wysig.</string>
     <string name="no_user_signed_in">Geen gebruiker aangemeld nie</string>
     <string name="delete_account_title">Skrap Rekening</string>
@@ -26,7 +45,7 @@
     <string name="error_saving">Fout tydens stoor: %1$s</string>
     <string name="profile_saved">Profiel gestoor</string>
 
-    <!-- Dashboard (Afrikaans) -->
+    <!-- Dashboard (localized) -->
     <string name="dashboard_my_events">My Geleenthede</string>
     <string name="dashboard_more_actions">Meer Aksies</string>
     <string name="dashboard_create_event">Skep Geleentheid</string>
@@ -51,39 +70,31 @@
         <item quantity="other">(%d geleenthede)</item>
     </plurals>
 
-    <!-- Biometric / Auth (Afrikaans) -->
-    <string name="prompt_info_title">Toast-verifikasie</string>
-    <string name="prompt_info_subtitle">Meld aan om toegang te kry</string>
-    <string name="prompt_info_description">Toast gebruik Android-biometriese verifikasie</string>
-    <string name="prompt_info_use_app_password">Gebruik toepwagwoord</string>
-    <string name="use_biometrics">Gebruik biometrie</string>
-    <string name="enable_biometric_login">Skakel biometriese aanmelding aan</string>
-    <string name="desc_biometrics_authorization">Voer jou aanmeld-ID en wagwoord in om aktivering van biometriese aanmelding te bevestig.</string>
-    <string name="btn_authorize">Magtig</string>
-
-    <!-- Login/Register (Afrikaans) -->
+    <!-- Login -->
     <string name="login_title">Meld aan</string>
     <string name="login_face_label">Meld aan met jou Face ID</string>
     <string name="or_text">Of</string>
     <string name="email_hint">E-pos</string>
     <string name="password_hint">Wagwoord</string>
     <string name="login_button">Meld aan</string>
-    <string name="signup_prompt">Het jy nie ’n rekening nie? Registreer</string>
+    <string name="signup_prompt">Het jy nie \'n rekening nie? Registreer</string>
+
+    <!-- Register -->
     <string name="create_account">Skep Rekening</string>
     <string name="add_photo">Voeg Foto by</string>
-    <string name="password_rules">*Wagwoord moet tussen 6 en 12 karakters wees, en ’n spesiale karakter, hoofletter, kleinletter en syfer bevat</string>
+    <string name="password_rules">*Wagwoord moet tussen 6 en 12 karakters wees, en \'n spesiale karakter, hoofletter, kleinletter en syfer bevat</string>
     <string name="done_button">Klaar</string>
     <string name="cancel_cap">Kanselleer</string>
-    <string name="already_have_account">Het reeds ’n rekening</string>
+    <string name="already_have_account">Het reeds \'n rekening</string>
 
-    <!-- Event Details (Afrikaans) -->
+    <!-- Event Details -->
     <string name="attendees_label">Bywoners: %1$d</string>
     <string name="about_this_event">Oor hierdie Geleentheid</string>
     <string name="guest_list">Gaste Lys</string>
-    <string name="view_event_photos">Sien Geleentheid-foto’s (Google Drive)</string>
+    <string name="view_event_photos">Sien Geleentheid-foto\'s (Google Drive)</string>
     <string name="event_image_content_description">Geleentheid banierbeeld</string>
 
-    <!-- Create Event (Afrikaans) -->
+    <!-- Create Event -->
     <string name="back">Terug</string>
     <string name="event_name_hint">Geleentheid Naam</string>
     <string name="enter_event_description">Voer Geleentheid-beskrywing in</string>
@@ -97,10 +108,10 @@
     <string name="music_suggestions">Musiek Voorstelle</string>
     <string name="insert_google_drive_link">Voeg Google Drive-skakel in</string>
     <string name="create_event">Skep Geleentheid</string>
+
+    <!-- My Events -->
     <string name="all_events_count">Alle Geleenthede (%1$d)</string>
     <string name="empty_no_events">Geen Geleenthede Nog nie</string>
     <string name="empty_create_first">Skep jou eerste geleentheid om te begin</string>
     <string name="create_new_event">Skep nuwe geleentheid</string>
 </resources>
-
-

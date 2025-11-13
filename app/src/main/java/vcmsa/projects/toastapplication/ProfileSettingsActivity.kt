@@ -28,12 +28,13 @@ class ProfileSettingsActivity : AppCompatActivity() {
     private val PICK_IMAGE_REQUEST = 1001
     private var selectedImageUri: Uri? = null
 
-    private lateinit var inputText: EditText
-    private lateinit var spinnerFrom: Spinner
-    private lateinit var spinnerTo: Spinner
-    private lateinit var btnTranslate: Button
-    private lateinit var translatedText: TextView
-    private lateinit var progressBar: ProgressBar
+    // Translator UI elements - commented out as views don't exist in layout
+    // private lateinit var inputText: EditText
+    // private lateinit var spinnerFrom: Spinner
+    // private lateinit var spinnerTo: Spinner
+    // private lateinit var btnTranslate: Button
+    // private lateinit var translatedText: TextView
+    // private lateinit var progressBar: ProgressBar
 
     private lateinit var spinnerLanguages: Spinner
     private val languageMap = mapOf(
@@ -49,10 +50,25 @@ class ProfileSettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setAppLocale(getPreferredLanguage())
 
-        binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        try {
+            binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // If layout inflation fails, show error and finish
+            Toast.makeText(this, "Error loading profile screen", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        // Set locale after content view is set (safer approach)
+        try {
+            setAppLocale(getPreferredLanguage())
+        } catch (e: Exception) {
+            // If locale setting fails, continue with default
+            e.printStackTrace()
+        }
 
         auth = FirebaseAuth.getInstance()
 
@@ -63,17 +79,22 @@ class ProfileSettingsActivity : AppCompatActivity() {
             return
         }
 
-        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
-            startActivity(Intent(this, DashboardActivity::class.java))
-        }
+        try {
+            findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
+                startActivity(Intent(this, DashboardActivity::class.java))
+            }
 
-        val btnLogout = findViewById<MaterialButton>(R.id.btnLogout)
-        btnLogout.setOnClickListener {
-            FirebaseAuth.getInstance().signOut() // Sign out the user
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
+            val btnLogout = findViewById<MaterialButton>(R.id.btnLogout)
+            btnLogout.setOnClickListener {
+                FirebaseAuth.getInstance().signOut() // Sign out the user
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error initializing UI: ${e.message}", Toast.LENGTH_LONG).show()
         }
 
         // Load profile info
@@ -142,7 +163,15 @@ class ProfileSettingsActivity : AppCompatActivity() {
                 .show()
         }
 
-        //  Initialize Translator UI elements
+        // Translator UI elements - commented out as views don't exist in layout
+        // If you want to add translator functionality, add these views to activity_profile_settings.xml:
+        // - EditText with id: inputText
+        // - Spinner with id: spinnerFrom
+        // - Spinner with id: spinnerTo
+        // - Button with id: btnTranslate
+        // - TextView with id: translatedText
+        // - ProgressBar with id: progressBar
+        /*
         inputText = findViewById(R.id.inputText)
         spinnerFrom = findViewById(R.id.spinnerFrom)
         spinnerTo = findViewById(R.id.spinnerTo)
@@ -218,6 +247,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
                     Toast.makeText(this, "Failed to download language model. Check your internet.", Toast.LENGTH_LONG).show()
                 }
         }
+        */
 
         // 🌍 Set up the preferred language spinner
         spinnerLanguages = binding.spinnerLanguages // add a spinner in XML for this
@@ -255,11 +285,17 @@ class ProfileSettingsActivity : AppCompatActivity() {
     }
 
     private fun setAppLocale(langCode: String) {
-        val locale = Locale(langCode)
-        Locale.setDefault(locale)
-        val config = resources.configuration
-        config.setLocale(locale)
-        resources.updateConfiguration(config, resources.displayMetrics)
+        try {
+            val locale = Locale(langCode)
+            Locale.setDefault(locale)
+            val config = resources.configuration
+            config.setLocale(locale)
+            @Suppress("DEPRECATION")
+            resources.updateConfiguration(config, resources.displayMetrics)
+        } catch (e: Exception) {
+            // If locale setting fails, continue with default locale
+            e.printStackTrace()
+        }
     }
 
     // --- EXISTING FUNCTIONS ---
