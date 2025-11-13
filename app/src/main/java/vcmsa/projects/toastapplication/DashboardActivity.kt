@@ -52,7 +52,7 @@ class DashboardActivity : AppCompatActivity() {
 
         val db = FirebaseFirestore.getInstance()
 
-        // 🔹 Load user profile info
+        //  Load user profile info
         auth.currentUser?.let { user ->
             val userId = user.uid
             val userDocRef = db.collection("users").document(userId)
@@ -87,7 +87,7 @@ class DashboardActivity : AppCompatActivity() {
             tvUserName.text = "Guest"
         }
 
-        // 🔹 Navigation buttons
+        // Navigation buttons
         findViewById<LinearLayout>(R.id.navHome).setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
         }
@@ -108,7 +108,7 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
         }
 
-        // 🔹 RecyclerView setup
+        // RecyclerView setup
         eventsRecyclerView = findViewById(R.id.recyclerEvents)
         eventsRecyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -123,7 +123,7 @@ class DashboardActivity : AppCompatActivity() {
         )
         eventsRecyclerView.adapter = eventAdapter
 
-        // 🔹 Category filters
+        // Category filters
         findViewById<LinearLayout>(R.id.chipWedding).setOnClickListener { filterEventsByCategory("Wedding") }
         findViewById<LinearLayout>(R.id.chipParty).setOnClickListener { filterEventsByCategory("Party") }
         findViewById<LinearLayout>(R.id.chipFood).setOnClickListener { filterEventsByCategory("Food") }
@@ -131,7 +131,7 @@ class DashboardActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.chipMeet).setOnClickListener { filterEventsByCategory("Meet-Up") }
         findViewById<LinearLayout>(R.id.chipGeneral).setOnClickListener { filterEventsByCategory("General") }
 
-        // 🔹 Load events from Firestore
+        // Load events from Firestore
         loadEvents()
     }
 
@@ -209,7 +209,7 @@ class DashboardActivity : AppCompatActivity() {
                 eventAdapter.updateData(filteredEvents, eventGuestMap)
                 updateEventCount()
 
-                // 🔹 Load RSVP guest data for each event
+                // Load RSVP guest data for each event
                 loadGuestDataForEvents()
             }
             .addOnFailureListener { exception ->

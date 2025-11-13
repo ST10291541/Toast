@@ -60,7 +60,8 @@
         <!-- Firebase Messaging Service -->
         <service
             android:name=".MyFirebaseMessagingService"
-            android:exported="false">
+            android:exported="false"
+            tools:ignore="MissingClass">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

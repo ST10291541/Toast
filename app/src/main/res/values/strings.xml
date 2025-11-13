@@ -16,4 +16,5 @@
     <string name="enable_biometric_login">Enable Biometric Login</string>
     <string name="desc_biometrics_authorization">Enter your login ID and password to confirm activation of Biometric Login.</string>
     <string name="btn_authorize">Authorize</string>
+
 </resources>

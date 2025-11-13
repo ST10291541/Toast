@@ -48,11 +48,9 @@ class ProfileSettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        // 🌍 Apply saved language BEFORE anything else
+        super.onCreate(savedInstanceState)
         setAppLocale(getPreferredLanguage())
 
-        super.onCreate(savedInstanceState)
         binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -358,7 +356,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     finish()
-                }, 5000)
+                }, 5000) // 5000 milliseconds = 5 seconds
             }
             .addOnFailureListener { e ->
                 onComplete()

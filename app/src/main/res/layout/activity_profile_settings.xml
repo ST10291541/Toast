@@ -6,9 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:fitsSystemWindows="true"
     tools:context=".ProfileSettingsActivity">
 
-    <!-- Header (Fixed at top) -->
+    <!-- Fixed Header -->
     <LinearLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
@@ -17,13 +18,13 @@
         android:gravity="center_vertical"
         android:padding="16dp"
         android:background="@android:color/white"
-        android:elevation="4dp"
+        android:elevation="6dp"
         app:layout_collapseMode="pin">
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="56dp"
-            android:layout_height="51dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/circle_white_bg"
             android:contentDescription="Go back"
             android:src="@drawable/ic_arrow_back" />
@@ -38,237 +39,170 @@
             android:layout_marginStart="12dp"/>
     </LinearLayout>
 
-    <!-- Content scrolls below header -->
+    <!-- Scrollable content below header -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="72dp"
-        android:fillViewport="true">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
-
-        <!-- Profile Picture with Edit Icon -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="130dp"
-            android:layout_height="130dp"
-            app:cardCornerRadius="65dp"
-            app:cardElevation="6dp"
-            app:strokeWidth="2dp"
-            app:strokeColor="#C8A951"
-            android:layout_marginTop="24dp">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/profileImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_profile"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="Profile picture"
-                    android:background="@drawable/circle_white_bg" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/editProfileImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="4dp"
-                    android:contentDescription="Edit picture"
-                    app:backgroundTint="#C8A951"
-                    app:srcCompat="@drawable/ic_edit"
-                    app:tint="@android:color/white"
-                    app:fabSize="mini"/>
-            </FrameLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Input Fields -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="First Name"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_marginTop="32dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/firstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Last Name"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/lastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Phone Number"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_marginTop="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/phone"
-                android:inputType="phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- Action Buttons -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSave"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Save Details"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            app:cornerRadius="12dp"
-            app:backgroundTint="#C8A951"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/changePasswordBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Change Password"
-            android:textAllCaps="false"
-            app:cornerRadius="12dp"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:textColor="#C8A951"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/deleteAccountBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Delete Account"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            app:cornerRadius="12dp"
-            app:backgroundTint="@android:color/holo_red_dark"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLogout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Logout"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            app:cornerRadius="12dp"
-            app:backgroundTint="#FF5722"/>
-
-        <!-- Language Selection -->
-        <TextView
-            android:id="@+id/tvSelectLanguage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Select App Language"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"/>
-
-        <Spinner
-            android:id="@+id/spinnerLanguages"
-            android:layout_width="match_parent"
-            android:layout_height="59dp"
-            android:spinnerMode="dropdown" />
-
-        <!-- 🌍 Translation Section -->
-        <TextView
-            android:id="@+id/translationHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Language Translator"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            android:layout_marginTop="32dp"
-            android:gravity="center"/>
-
-        <EditText
-            android:id="@+id/inputText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Type text to translate"
-            android:layout_marginTop="16dp"
-            android:padding="12dp"
-            android:background="@drawable/edit_text_bg"
-            android:inputType="textMultiLine"/>
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:orientation="vertical"
+            android:padding="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:weightSum="2">
+            android:gravity="center_horizontal">
+
+            <!-- Profile Picture -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                app:cardCornerRadius="65dp"
+                app:cardElevation="6dp"
+                app:strokeWidth="2dp"
+                app:strokeColor="#C8A951"
+                android:layout_marginTop="24dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/profileImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_profile"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Profile picture"
+                        android:background="@drawable/circle_white_bg" />
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/editProfileImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="4dp"
+                        android:contentDescription="Edit picture"
+                        app:backgroundTint="#C8A951"
+                        app:srcCompat="@drawable/ic_edit"
+                        app:tint="@android:color/white"
+                        app:fabSize="mini"/>
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Input Fields -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="First Name"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_marginTop="32dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/firstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Last Name"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_marginTop="16dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/lastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Phone Number"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/phone"
+                    android:inputType="phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Action Buttons -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Save Details"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:cornerRadius="12dp"
+                app:backgroundTint="#C8A951"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/changePasswordBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Change Password"
+                android:textAllCaps="false"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                app:cornerRadius="12dp"
+                android:textColor="#C8A951"/>
+
+            <!-- Language Section -->
+            <TextView
+                android:id="@+id/tvSelectLanguage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select App Language"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"/>
 
             <Spinner
-                android:id="@+id/spinnerFrom"
-                android:layout_width="0dp"
-                android:layout_height="58dp"
-                android:layout_weight="1"
+                android:id="@+id/spinnerLanguages"
+                android:layout_width="match_parent"
+                android:layout_height="59dp"
                 android:spinnerMode="dropdown" />
 
-            <Spinner
-                android:id="@+id/spinnerTo"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:spinnerMode="dropdown" />
-        </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTranslate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Translate"
+                android:layout_marginTop="16dp"
+                app:cornerRadius="12dp"
+                app:backgroundTint="#C8A951"
+                android:textColor="@android:color/white"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTranslate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Translate"
-            android:layout_marginTop="16dp"
-            app:cornerRadius="12dp"
-            app:backgroundTint="#C8A951"
-            android:textColor="@android:color/white"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteAccountBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Delete Account"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:cornerRadius="12dp"
+                app:backgroundTint="@android:color/holo_red_dark"/>
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:layout_marginTop="8dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Logout"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:cornerRadius="12dp"
+                app:backgroundTint="#FF5722"/>
 
-        <TextView
-            android:id="@+id/translatedText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Translated text will appear here"
-            android:textColor="@android:color/darker_gray"
-            android:padding="8dp"
-            android:background="@drawable/edit_text_bg"
-            android:textSize="16sp"
-            android:gravity="center"/>
-
-        <!-- Orange-red color -->
         </LinearLayout>
     </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

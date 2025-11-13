@@ -2,6 +2,7 @@ package vcmsa.projects.toastapplication
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
@@ -13,7 +14,10 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import vcmsa.projects.toastapplication.local.EventEntity
+import vcmsa.projects.toastapplication.local.EventRepo
 import vcmsa.projects.toastapplication.network.RetrofitClient
+import java.util.UUID
 
 class CreateEventActivity : AppCompatActivity() {
 
@@ -48,7 +52,7 @@ class CreateEventActivity : AppCompatActivity() {
         initViews()
         setupCreateEventButton()
 
-        findViewById<ImageButton>(R.id.backArrow).setOnClickListener {
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
             startActivity(Intent(this, DashboardActivity::class.java))
             finish()
         }
@@ -141,6 +145,36 @@ class CreateEventActivity : AppCompatActivity() {
 
     private fun createEvent(event: CreateEventRequest) {
         val user = FirebaseAuth.getInstance().currentUser
+        val repo = EventRepo(this)
+
+        // Check if online first
+        if (!isOnline()) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val localEvent = EventEntity(
+                    id = UUID.randomUUID().toString(),
+                    title = event.title,
+                    description = event.description,
+                    date = event.date,
+                    time = event.time,
+                    location = event.location,
+                    category = event.category,
+                    googleDriveLink = event.googleDriveLink,
+                    dietaryRequirements = event.dietaryRequirements.joinToString(","),
+                    musicSuggestions = event.musicSuggestions.joinToString(","),
+                    createdAt = System.currentTimeMillis(),
+                    hostUserId = user?.uid ?: "unknown",
+                    isSynced = false
+                )
+                repo.createEventOffline(localEvent)
+                runOnUiThread {
+                    Toast.makeText(this@CreateEventActivity, "Saved offline — will sync later", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            }
+            return
+        }
+
+        // Original online API logic
         user?.getIdToken(true)?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val token = task.result?.token ?: return@addOnCompleteListener
@@ -167,5 +201,12 @@ class CreateEventActivity : AppCompatActivity() {
                 Toast.makeText(this, "Authentication failed", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    // Helper function to check connectivity
+    private fun isOnline(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+        val network = cm.activeNetworkInfo
+        return network != null && network.isConnected
     }
 }

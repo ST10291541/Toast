@@ -127,7 +127,7 @@ class EventAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.event_card_item, parent, false) // Using the new card layout
+            .inflate(R.layout.item_event_card, parent, false) // Using the new card layout
         return EventViewHolder(view)
     }
 
@@ -137,7 +137,7 @@ class EventAdapter(
 
     override fun getItemCount(): Int = eventList.size
 
-    // 🔹 Update the event list and guest data dynamically
+    // Update the event list and guest data dynamically
     fun updateData(newList: List<Event>, newGuestMap: Map<String, List<Guest>>) {
         eventList = newList
         eventGuestMap = newGuestMap

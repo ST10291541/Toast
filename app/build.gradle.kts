@@ -2,8 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
-    id ("kotlin-kapt")
-
+    id("kotlin-kapt")
 
 }
 
@@ -50,6 +49,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.dynamic.links.ktx)
+    implementation(libs.translate)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -64,7 +64,7 @@ dependencies {
     // Firebase Messaging
     implementation("com.google.firebase:firebase-messaging-ktx")
 
-// Firebase Core
+    // Firebase Core
     implementation("com.google.firebase:firebase-analytics-ktx")
 
     // add the dependencies for Firebase Authentication and Cloud Firestore
@@ -88,4 +88,9 @@ dependencies {
     //biometrics
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("com.google.code.gson:gson:2.8.9")
+
+    // room db
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 }

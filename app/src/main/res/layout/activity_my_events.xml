@@ -90,7 +90,7 @@
             android:padding="8dp"
             android:clipToPadding="false"
             android:scrollbars="vertical"
-            tools:listitem="@layout/event_card_item" />
+            tools:listitem="@layout/item_event_card" />
 
         <!-- Empty State -->
         <LinearLayout
