@@ -35,7 +35,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Go back"
+                    android:contentDescription="@string/go_back"
                     android:src="@drawable/ic_arrow_back"
                     app:tint="@color/black" />
 
@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="16dp"
-                    android:text="My Events"
+                    android:text="@string/dashboard_my_events"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -74,7 +74,7 @@
                 android:id="@+id/tvEventsCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="All Events (0)"
+                android:text="@string/all_events_count"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
@@ -116,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="No Events Yet"
+                android:text="@string/empty_no_events"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="#666666" />
@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:text="Create your first event to get started"
+                android:text="@string/empty_create_first"
                 android:textSize="14sp"
                 android:textColor="#999999" />
 
@@ -134,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Create Event"
+                android:text="@string/create_event"
                 android:textColor="@android:color/white"
                 app:icon="@drawable/ic_add"
                 app:iconTint="@android:color/white"
@@ -151,7 +151,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:layout_marginBottom="80dp"
-        android:contentDescription="Create new event"
+        android:contentDescription="@string/create_new_event"
         app:srcCompat="@drawable/ic_add"
         app:backgroundTint="#8BC34A"
         app:tint="@android:color/white"

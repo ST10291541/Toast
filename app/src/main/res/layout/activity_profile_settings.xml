@@ -23,16 +23,16 @@
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="52dp"
+            android:layout_height="50dp"
             android:background="@drawable/circle_white_bg"
-            android:contentDescription="Go back"
+            android:contentDescription="@string/go_back"
             android:src="@drawable/ic_arrow_back" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Profile"
+            android:text="@string/edit_profile"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
@@ -96,7 +96,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="First Name"
+                android:hint="@string/hint_first_name"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_marginTop="32dp">
                 <com.google.android.material.textfield.TextInputEditText
@@ -108,7 +108,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Last Name"
+                android:hint="@string/hint_last_name"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_marginTop="16dp">
                 <com.google.android.material.textfield.TextInputEditText
@@ -120,7 +120,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Phone Number"
+                android:hint="@string/hint_phone"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_marginTop="16dp">
 
@@ -137,7 +137,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Save Details"
+                android:text="@string/save_details"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 app:cornerRadius="12dp"
@@ -148,7 +148,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Change Password"
+                android:text="@string/change_password"
                 android:textAllCaps="false"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 app:cornerRadius="12dp"
@@ -159,7 +159,7 @@
                 android:id="@+id/tvSelectLanguage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select App Language"
+                android:text="@string/select_app_language"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"
@@ -172,21 +172,11 @@
                 android:spinnerMode="dropdown" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnTranslate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Translate"
-                android:layout_marginTop="16dp"
-                app:cornerRadius="12dp"
-                app:backgroundTint="#C8A951"
-                android:textColor="@android:color/white"/>
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/deleteAccountBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Delete Account"
+                android:text="@string/delete_account"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 app:cornerRadius="12dp"
@@ -197,7 +187,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Logout"
+                android:text="@string/logout"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 app:cornerRadius="12dp"

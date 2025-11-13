@@ -25,7 +25,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/circle_white_bg"
-                android:contentDescription="Back"
+                android:contentDescription="@string/back"
                 android:src="@drawable/ic_arrow_back" />
         </LinearLayout>
 
@@ -34,7 +34,7 @@
             android:id="@+id/eventName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Event Name"
+            android:hint="@string/event_name_hint"
             android:background="@drawable/edittext_bg"
             android:padding="16dp"
             android:layout_marginBottom="16dp" />
@@ -44,7 +44,7 @@
             android:id="@+id/eventDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Event Description"
+            android:hint="@string/enter_event_description"
             android:background="@drawable/edittext_bg"
             android:padding="16dp"
             android:layout_marginBottom="16dp" />
@@ -61,7 +61,7 @@
             android:id="@+id/btnPickDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pick Date"
+            android:text="@string/pick_date"
             android:drawableStart="@drawable/ic_calendar"
             android:backgroundTint="@color/black"
             android:textColor="@android:color/white"
@@ -72,7 +72,7 @@
             android:id="@+id/btnPickTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pick Time"
+            android:text="@string/pick_time"
             android:drawableStart="@drawable/ic_time"
             android:backgroundTint="@color/black"
             android:textColor="@android:color/white"
@@ -82,7 +82,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Location"
+            android:text="@string/location_label"
             android:drawableStart="@drawable/ic_location"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
@@ -91,7 +91,7 @@
             android:id="@+id/eventLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter Location"
+            android:hint="@string/enter_location"
             android:background="@drawable/edittext_bg"
             android:padding="16dp"
             android:layout_marginBottom="16dp" />
@@ -100,7 +100,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dietary Requirements"
+            android:text="@string/dietary_requirements"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
 
@@ -108,7 +108,7 @@
             android:id="@+id/diet1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Requirement 1"
+            android:hint="@string/requirement_1"
             android:background="@drawable/edittext_bg"
             android:padding="16dp"
             android:layout_marginBottom="8dp" />
@@ -117,7 +117,7 @@
             android:id="@+id/diet2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Requirement 2"
+            android:hint="@string/requirement_2"
             android:background="@drawable/edittext_bg"
             android:padding="16dp"
             android:layout_marginBottom="16dp" />
@@ -127,7 +127,7 @@
             android:id="@+id/musicPollCheckbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Music Suggestions"
+            android:text="@string/music_suggestions"
             android:layout_marginBottom="16dp" />
 
         <!-- Google Drive Link -->
@@ -135,7 +135,7 @@
             android:id="@+id/googleDriveLink"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Insert Google Drive lInk"
+            android:hint="@string/insert_google_drive_link"
             android:background="@drawable/edittext_bg"
             android:padding="16dp"
             android:layout_marginBottom="24dp" />
@@ -145,7 +145,7 @@
             android:id="@+id/createEventBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create Event"
+            android:text="@string/create_event"
             android:textColor="@android:color/white"
             android:backgroundTint="@android:color/holo_blue_light"
             android:textAllCaps="true"

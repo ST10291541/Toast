@@ -22,7 +22,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login"
+            android:text="@string/login_title"
             android:textSize="28sp"
             android:textStyle="bold"
             android:textColor="#000000"
@@ -40,7 +40,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Log in with your Face ID"
+            android:text="@string/login_face_label"
             android:textSize="14sp"
             android:textColor="#555555"
             android:layout_marginTop="8dp" />
@@ -74,7 +74,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Or"
+                android:text="@string/or_text"
                 android:textColor="#555555"
                 android:padding="8dp"/>
 
@@ -95,7 +95,7 @@
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Email"
+            android:hint="@string/email_hint"
             android:inputType="textEmailAddress"
             android:background="@drawable/edittext_bg"
             android:padding="12dp"
@@ -106,7 +106,7 @@
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Password"
+            android:hint="@string/password_hint"
             android:inputType="textPassword"
             android:background="@drawable/edittext_bg"
             android:padding="12dp"
@@ -118,7 +118,7 @@
             android:layout_height="52dp"
             android:layout_marginBottom="12dp"
             android:background="@color/mustard_yellow"
-            android:text="Login"
+            android:text="@string/login_button"
             android:textColor="@android:color/black" />
 
         <!-- Sign Up Text -->
@@ -126,7 +126,7 @@
             android:id="@+id/btnRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have an account? Sign Up"
+            android:text="@string/signup_prompt"
             android:textColor="#0000EE"
             android:background="@android:color/transparent"
             android:layout_marginTop="8dp"

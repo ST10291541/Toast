@@ -32,7 +32,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Create Account"
+                android:text="@string/create_account"
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black" />
@@ -43,7 +43,7 @@
                 android:src="@drawable/ic_camera"
                 android:background="@drawable/dotted_circle_bg"
                 android:padding="8dp"
-                android:contentDescription="Add Photo" />
+                android:contentDescription="@string/add_photo" />
         </LinearLayout>
 
         <com.google.android.gms.common.SignInButton
@@ -69,7 +69,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Or"
+                android:text="@string/or_text"
                 android:textColor="#555555"
                 android:padding="8dp"/>
 
@@ -85,7 +85,7 @@
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Email"
+            android:hint="@string/email_hint"
             android:inputType="textEmailAddress"
             android:background="@drawable/edittext_bg"
             android:padding="12dp"
@@ -94,7 +94,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="*Password must be between 6 and 12 characters, includes a special character, uppercase, lowercase and numeric value"
+            android:text="@string/password_rules"
             android:textColor="#FF0000"
             android:textSize="8pt"
             android:padding="8dp"/>
@@ -104,7 +104,7 @@
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Password"
+            android:hint="@string/password_hint"
             android:inputType="textPassword"
             android:background="@drawable/edittext_bg"
             android:padding="12dp"
@@ -117,7 +117,7 @@
             android:layout_height="52dp"
             android:layout_marginBottom="12dp"
             android:background="@color/mustard_yellow"
-            android:text="Done"
+            android:text="@string/done_button"
             android:textColor="@android:color/black" />
 
         <!-- Cancel -->
@@ -125,7 +125,7 @@
             android:id="@+id/tvCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
+            android:text="@string/cancel_cap"
             android:textColor="@android:color/darker_gray"
             android:layout_marginBottom="8dp" />
 
@@ -134,7 +134,7 @@
             android:id="@+id/tvAlreadyHaveAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Already Have an Account"
+            android:text="@string/already_have_account"
             android:textColor="@android:color/black"
             android:textStyle="bold" />
     </LinearLayout>

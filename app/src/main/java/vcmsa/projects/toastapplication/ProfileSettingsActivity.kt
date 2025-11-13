@@ -19,21 +19,10 @@ import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import vcmsa.projects.toastapplication.databinding.ActivityProfileSettingsBinding
 import android.view.View
 import android.widget.*
-import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.Translation
-import com.google.mlkit.nl.translate.TranslatorOptions
-import java.util.Locale
 
 class ProfileSettingsActivity : AppCompatActivity() {
     private val PICK_IMAGE_REQUEST = 1001
     private var selectedImageUri: Uri? = null
-
-    private lateinit var inputText: EditText
-    private lateinit var spinnerFrom: Spinner
-    private lateinit var spinnerTo: Spinner
-    private lateinit var btnTranslate: Button
-    private lateinit var translatedText: TextView
-    private lateinit var progressBar: ProgressBar
 
     private lateinit var spinnerLanguages: Spinner
     private val languageMap = mapOf(
@@ -49,7 +38,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setAppLocale(getPreferredLanguage())
+        LocaleManager.applySavedLocale(this)
 
         binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -58,7 +47,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
 
         val user = auth.currentUser
         if (user == null) {
-            Toast.makeText(this, "You must be signed in to edit profile.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.must_be_signed_in), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -99,19 +88,19 @@ class ProfileSettingsActivity : AppCompatActivity() {
             val user = auth.currentUser
 
             if (user == null) {
-                Toast.makeText(this, "No user signed in", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.no_user_signed_in), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             // Confirm deletion
             AlertDialog.Builder(this)
-                .setTitle("Delete Account")
-                .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
-                .setPositiveButton("Delete") { _, _ ->
+                .setTitle(getString(R.string.delete_account_title))
+                .setMessage(getString(R.string.delete_account_message))
+                .setPositiveButton(getString(R.string.delete)) { _, _ ->
 
                     user.delete()
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, getString(R.string.account_deleted), Toast.LENGTH_SHORT).show()
 
                             // Return to login after 2 seconds
                             Handler(mainLooper).postDelayed({
@@ -125,7 +114,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
                             if (e is FirebaseAuthRecentLoginRequiredException) {
                                 Toast.makeText(
                                     this,
-                                    "Please log in again to delete your account",
+                                    getString(R.string.please_login_again_delete),
                                     Toast.LENGTH_LONG
                                 ).show()
 
@@ -133,133 +122,43 @@ class ProfileSettingsActivity : AppCompatActivity() {
                                 startActivity(intent)
                                 finish()
                             } else {
-                                Toast.makeText(this, "Failed to delete account: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, getString(R.string.failed_delete_account, e.message ?: ""), Toast.LENGTH_SHORT).show()
                             }
                         }
 
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show()
         }
 
-        //  Initialize Translator UI elements
-        inputText = findViewById(R.id.inputText)
-        spinnerFrom = findViewById(R.id.spinnerFrom)
-        spinnerTo = findViewById(R.id.spinnerTo)
-        btnTranslate = findViewById(R.id.btnTranslate)
-        translatedText = findViewById(R.id.translatedText)
-        progressBar = findViewById(R.id.progressBar)
-
-        // Set up the spinners
-        val translatorLanguages = listOf("English", "Afrikaans")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, translatorLanguages)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        spinnerFrom.adapter = adapter
-        spinnerTo.adapter = adapter
-
-        // Default selection
-        spinnerFrom.setSelection(translatorLanguages.indexOf("English"))
-        spinnerTo.setSelection(translatorLanguages.indexOf("Afrikaans"))
-
-        btnTranslate.setOnClickListener {
-            val text = inputText.text.toString().trim()
-            if (text.isEmpty()) {
-                Toast.makeText(this, "Please enter text to translate", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val fromLangName = spinnerFrom.selectedItem.toString()
-            val toLangName = spinnerTo.selectedItem.toString()
-
-            val fromLangCode = when (fromLangName) {
-                "English" -> TranslateLanguage.ENGLISH
-                "Afrikaans" -> TranslateLanguage.AFRIKAANS
-                else -> TranslateLanguage.ENGLISH
-            }
-
-            val toLangCode = when (toLangName) {
-                "English" -> TranslateLanguage.ENGLISH
-                "Afrikaans" -> TranslateLanguage.AFRIKAANS
-                else -> TranslateLanguage.ENGLISH
-            }
-
-            if (fromLangCode == toLangCode) {
-                translatedText.text = text
-                return@setOnClickListener
-            }
-
-            // Show progress bar
-            progressBar.visibility = View.VISIBLE
-            translatedText.text = ""
-
-            val options = TranslatorOptions.Builder()
-                .setSourceLanguage(fromLangCode)
-                .setTargetLanguage(toLangCode)
-                .build()
-
-            val translator = Translation.getClient(options)
-
-            // Download the model if needed
-            translator.downloadModelIfNeeded()
-                .addOnSuccessListener {
-                    translator.translate(text)
-                        .addOnSuccessListener { translated ->
-                            progressBar.visibility = View.GONE
-                            translatedText.text = translated
-                        }
-                        .addOnFailureListener { e ->
-                            progressBar.visibility = View.GONE
-                            Toast.makeText(this, "Translation failed: ${e.message}", Toast.LENGTH_LONG).show()
-                        }
-                }
-                .addOnFailureListener {
-                    progressBar.visibility = View.GONE
-                    Toast.makeText(this, "Failed to download language model. Check your internet.", Toast.LENGTH_LONG).show()
-                }
-        }
-
         // 🌍 Set up the preferred language spinner
-        spinnerLanguages = binding.spinnerLanguages // add a spinner in XML for this
+        spinnerLanguages = binding.spinnerLanguages
         val langAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languageMap.keys.toList())
         langAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerLanguages.adapter = langAdapter
 
-        // Set current selection based on saved preference
-        val currentLang = getPreferredLanguage()
-        val currentIndex = languageMap.values.indexOf(currentLang)
-        if (currentIndex >= 0) spinnerLanguages.setSelection(currentIndex)
+        // Set current selection based on user profile preference (Firestore)
+        val uid = auth.currentUser!!.uid
+        db.collection("users").document(uid).get()
+            .addOnSuccessListener { doc ->
+                val currentLang = doc.getString("language") ?: "en"
+                val currentIndex = languageMap.values.indexOf(currentLang)
+                if (currentIndex >= 0) spinnerLanguages.setSelection(currentIndex)
+            }
 
         spinnerLanguages.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedLangCode = languageMap.values.toList()[position]
-                savePreferredLanguage(selectedLangCode)
-                setAppLocale(selectedLangCode)
+                // Save to Firestore for this user and apply immediately for this session
+                db.collection("users").document(uid)
+                    .set(mapOf("language" to selectedLangCode), com.google.firebase.firestore.SetOptions.merge())
+                LocaleManager.applyLanguageTag(selectedLangCode)
                 recreate() // restart activity to apply language
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-    }
-
-    // --- LANGUAGE HELPERS ---
-    private fun savePreferredLanguage(langCode: String) {
-        val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
-        prefs.edit().putString("App_Language", langCode).apply()
-    }
-
-    private fun getPreferredLanguage(): String {
-        val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
-        return prefs.getString("App_Language", "en")!! // default English
-    }
-
-    private fun setAppLocale(langCode: String) {
-        val locale = Locale(langCode)
-        Locale.setDefault(locale)
-        val config = resources.configuration
-        config.setLocale(locale)
-        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
     // --- EXISTING FUNCTIONS ---
@@ -287,7 +186,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "image/*"
         }
-        startActivityForResult(Intent.createChooser(intent, "Select profile picture"), PICK_IMAGE_REQUEST)
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.select_profile_picture)), PICK_IMAGE_REQUEST)
     }
 
     @Deprecated("Deprecated in Java")
@@ -308,11 +207,11 @@ class ProfileSettingsActivity : AppCompatActivity() {
         val phoneNum = binding.phone.text.toString().trim()
 
         if (first.isEmpty()) {
-            binding.firstName.error = "Enter first name"
+            binding.firstName.error = getString(R.string.enter_first_name)
             return
         }
 
-        val snack = Snackbar.make(binding.root, "Saving...", Snackbar.LENGTH_INDEFINITE)
+        val snack = Snackbar.make(binding.root, getString(R.string.saving), Snackbar.LENGTH_INDEFINITE)
         snack.show()
 
         db.collection("users").document(uid).get()
@@ -326,7 +225,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 snack.dismiss()
-                Toast.makeText(this, "Error saving: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.error_saving, e.message ?: ""), Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -350,7 +249,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
             .set(map, com.google.firebase.firestore.SetOptions.merge())
             .addOnSuccessListener {
                 onComplete()
-                Toast.makeText(this, "Profile saved", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.profile_saved), Toast.LENGTH_SHORT).show()
                 Handler(Looper.getMainLooper()).postDelayed({
                     val intent = Intent(this, DashboardActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -62,7 +62,7 @@ class DashboardActivity : AppCompatActivity() {
                     val firstName = document.getString("firstName")
                     val profileImageUrl = document.getString("profileImageUri")
 
-                    tvUserName.text = firstName ?: user.email ?: "User"
+                    tvUserName.text = firstName ?: user.email ?: getString(R.string.user_fallback)
 
                     if (!profileImageUrl.isNullOrEmpty()) {
                         Glide.with(this).load(profileImageUrl).circleCrop().into(imgProfile)
@@ -72,19 +72,19 @@ class DashboardActivity : AppCompatActivity() {
                         }
                     }
                 } else {
-                    tvUserName.text = user.email ?: "User"
+                    tvUserName.text = user.email ?: getString(R.string.user_fallback)
                     user.photoUrl?.let {
                         Glide.with(this).load(it).circleCrop().into(imgProfile)
                     }
                 }
             }.addOnFailureListener {
-                tvUserName.text = user.email ?: "User"
+                tvUserName.text = user.email ?: getString(R.string.user_fallback)
                 user.photoUrl?.let {
                     Glide.with(this).load(it).circleCrop().into(imgProfile)
                 }
             }
         } ?: run {
-            tvUserName.text = "Guest"
+            tvUserName.text = getString(R.string.guest)
         }
 
         // Navigation buttons
@@ -213,7 +213,7 @@ class DashboardActivity : AppCompatActivity() {
                 loadGuestDataForEvents()
             }
             .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to load events: ${exception.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.failed_to_load_events, exception.message ?: ""), Toast.LENGTH_LONG).show()
             }
     }
 
@@ -228,9 +228,9 @@ class DashboardActivity : AppCompatActivity() {
                         Guest(
                             guestId = doc.id,
                             userName = doc.getString("userName") ?: "Anonymous",
-                            status = doc.getString("status") ?: "Not set",
-                            dietaryChoice = doc.getString("dietaryChoice") ?: "Not specified",
-                            musicChoice = doc.getString("musicChoice") ?: "Not specified"
+                            status = doc.getString("status") ?: getString(R.string.status_not_set),
+                            dietaryChoice = doc.getString("dietaryChoice") ?: getString(R.string.not_specified),
+                            musicChoice = doc.getString("musicChoice") ?: getString(R.string.not_specified)
                         )
                     }
 

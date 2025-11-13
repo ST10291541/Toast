@@ -126,7 +126,7 @@ class LoginActivity : AppCompatActivity() {
                 // For Firebase, we need to sign in again
                 // In a real app, you might store the actual Firebase token
                 // For now, we'll navigate to dashboard directly
-                navigateToDashboard()
+                applyUserLanguageThenNavigate()
             }
         }
     }
@@ -140,10 +140,29 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    navigateToDashboard()
+                    applyUserLanguageThenNavigate()
                 } else {
                     Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
+            }
+    }
+
+    private fun applyUserLanguageThenNavigate() {
+        val user = auth.currentUser
+        if (user == null) {
+            navigateToDashboard()
+            return
+        }
+        db.collection("users").document(user.uid).get()
+            .addOnSuccessListener { doc ->
+                val lang = doc.getString("language")
+                if (!lang.isNullOrBlank()) {
+                    LocaleManager.applyLanguageTag(lang)
+                }
+                navigateToDashboard()
+            }
+            .addOnFailureListener {
+                navigateToDashboard()
             }
     }
 
@@ -178,7 +197,7 @@ class LoginActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
-                navigateToDashboard()
+                applyUserLanguageThenNavigate()
             } else {
                 Toast.makeText(this, "Firebase auth failed", Toast.LENGTH_SHORT).show()
             }

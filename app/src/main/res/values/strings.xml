@@ -16,5 +16,101 @@
     <string name="enable_biometric_login">Enable Biometric Login</string>
     <string name="desc_biometrics_authorization">Enter your login ID and password to confirm activation of Biometric Login.</string>
     <string name="btn_authorize">Authorize</string>
+    <!-- Profile / Settings -->
+    <string name="edit_profile">Edit Profile</string>
+    <string name="go_back">Go back</string>
+    <string name="edit_picture">Edit picture</string>
+    <string name="hint_first_name">First Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="hint_phone">Phone Number</string>
+    <string name="save_details">Save Details</string>
+    <string name="change_password">Change Password</string>
+    <string name="select_app_language">Select App Language</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="logout">Logout</string>
 
+    <!-- Messages -->
+    <string name="must_be_signed_in">You must be signed in to edit profile.</string>
+    <string name="no_user_signed_in">No user signed in</string>
+    <string name="delete_account_title">Delete Account</string>
+    <string name="delete_account_message">Are you sure you want to delete your account? This action cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="account_deleted">Account deleted successfully</string>
+    <string name="please_login_again_delete">Please log in again to delete your account</string>
+    <string name="failed_delete_account">Failed to delete account: %1$s</string>
+    <string name="select_profile_picture">Select profile picture</string>
+    <string name="enter_first_name">Enter first name</string>
+    <string name="saving">Saving...</string>
+    <string name="error_saving">Error saving: %1$s</string>
+    <string name="profile_saved">Profile saved</string>
+
+    <!-- Dashboard (localized) -->
+    <string name="dashboard_my_events">My Events</string>
+    <string name="dashboard_more_actions">More Actions</string>
+    <string name="dashboard_create_event">Create Event</string>
+    <string name="dashboard_my_events_action">My Events</string>
+    <string name="dashboard_my_profile">My Profile</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_events">Events</string>
+    <string name="nav_profile">Profile</string>
+    <string name="chip_wedding">Wedding</string>
+    <string name="chip_party">Party</string>
+    <string name="chip_food">Food</string>
+    <string name="chip_art">Art</string>
+    <string name="chip_meetup">Meet-Up</string>
+    <string name="chip_general">General</string>
+    <string name="guest">Guest</string>
+    <string name="user_fallback">User</string>
+    <string name="failed_to_load_events">Failed to load events: %1$s</string>
+    <string name="status_not_set">Not set</string>
+    <string name="not_specified">Not specified</string>
+    <plurals name="events_count">
+        <item quantity="one">(%d event)</item>
+        <item quantity="other">(%d events)</item>
+    </plurals>
+
+    <!-- Login -->
+    <string name="login_title">Login</string>
+    <string name="login_face_label">Log in with your Face ID</string>
+    <string name="or_text">Or</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="signup_prompt">Don&#39;t have an account? Sign Up</string>
+
+    <!-- Register -->
+    <string name="create_account">Create Account</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="password_rules">*Password must be between 6 and 12 characters, includes a special character, uppercase, lowercase and numeric value</string>
+    <string name="done_button">Done</string>
+    <string name="cancel_cap">Cancel</string>
+    <string name="already_have_account">Already Have an Account</string>
+
+    <!-- Event Details -->
+    <string name="attendees_label">Attendees: %1$d</string>
+    <string name="about_this_event">About This Event</string>
+    <string name="guest_list">Guest List</string>
+    <string name="view_event_photos">View Event Photos (Google Drive)</string>
+
+    <!-- Create Event -->
+    <string name="back">Back</string>
+    <string name="event_name_hint">Event Name</string>
+    <string name="enter_event_description">Enter Event Description</string>
+    <string name="pick_date">Pick Date</string>
+    <string name="pick_time">Pick Time</string>
+    <string name="location_label">Location</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="dietary_requirements">Dietary Requirements</string>
+    <string name="requirement_1">Requirement 1</string>
+    <string name="requirement_2">Requirement 2</string>
+    <string name="music_suggestions">Music Suggestions</string>
+    <string name="insert_google_drive_link">Insert Google Drive lInk</string>
+    <string name="create_event">Create Event</string>
+
+    <!-- My Events -->
+    <string name="all_events_count">All Events (%1$d)</string>
+    <string name="empty_no_events">No Events Yet</string>
+    <string name="empty_create_first">Create your first event to get started</string>
+    <string name="create_new_event">Create new event</string>
 </resources>
