@@ -36,9 +36,11 @@ class ProfileSettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
 
         LocaleManager.applySavedLocale(this)
+
+        super.onCreate(savedInstanceState)
 
         binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -58,6 +60,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         loadUserProfile()
         setupLanguageSpinner()
     }
+
 
     // --- UI SETUP ---
     private fun setupUI() {
@@ -84,17 +87,25 @@ class ProfileSettingsActivity : AppCompatActivity() {
         binding.deleteAccountBtn.setOnClickListener { confirmDeleteAccount() }
     }
 
-    // --- LANGUAGE SPINNER ---
+
     private fun setupLanguageSpinner() {
         spinnerLanguages = binding.spinnerLanguages
-        val langAdapter =
-            ArrayAdapter(this, android.R.layout.simple_spinner_item, languageMap.keys.toList())
+
+        val langAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            languageMap.keys.toList()
+        )
         langAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerLanguages.adapter = langAdapter
 
-        val savedLang = getPreferredLanguage(this)
-        val savedIndex = languageMap.values.indexOf(savedLang)
+        // Load saved language
+        val savedLang = LocaleManager.getSavedLanguage(this)
+        val savedIndex = languageMap.values.toList().indexOf(savedLang)
         if (savedIndex >= 0) spinnerLanguages.setSelection(savedIndex, false)
+
+        // Tell spinner "initial selection phase is complete"
+        isLanguageSpinnerInitialized = true
 
         spinnerLanguages.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -111,7 +122,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
                 if (selectedLangCode != currentLang) {
                     LocaleManager.saveLanguage(this@ProfileSettingsActivity, selectedLangCode)
                     LocaleManager.applyLanguageTag(selectedLangCode)
-                    recreate() // restart this activity to apply new locale
+                    recreate()
                 }
             }
 
@@ -119,16 +130,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         }
     }
 
-    // --- LANGUAGE HELPERS ---
-    private fun savePreferredLanguage(langCode: String) {
-        val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
-        prefs.edit().putString("App_Language", langCode).commit()
-    }
 
-    private fun getPreferredLanguage(context: Context): String {
-        val prefs = context.getSharedPreferences("AppSettings", MODE_PRIVATE)
-        return prefs.getString("App_Language", "en")!! // default English
-    }
 
 
     // --- PROFILE FUNCTIONS ---

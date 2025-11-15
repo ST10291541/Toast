@@ -2,12 +2,16 @@ package vcmsa.projects.toastapplication
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Handler
 import android.os.Looper
+import androidx.appcompat.app.AppCompatActivity
 
 class SplashActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply saved locale **before super.onCreate**
+        LocaleManager.applySavedLocale(this)
+
         super.onCreate(savedInstanceState)
 
         // Apply splash theme
@@ -17,6 +21,6 @@ class SplashActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             startActivity(Intent(this, IntroActivity::class.java))
             finish()
-        }, 2000) // 2000 ms = 2 seconds
+        }, 2000)
     }
 }

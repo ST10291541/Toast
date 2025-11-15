@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">ToastApplication</string>
-    <string name="default_web_client_id">AIzaSyCdG2D_sXlDWu5KIuik-MPZ0otrewHRu2A</string>
+    <string name="app_name" translatable="false">ToastApplication</string>
+    <string name="default_web_client_id" translatable="false">AIzaSyCdG2D_sXlDWu5KIuik-MPZ0otrewHRu2A</string>
     <string-array name="dietary_options">
         <item>Vegetarian</item>
         <item>Vegan</item>

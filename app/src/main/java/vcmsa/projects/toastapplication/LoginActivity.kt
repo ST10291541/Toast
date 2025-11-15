@@ -156,9 +156,14 @@ class LoginActivity : AppCompatActivity() {
         db.collection("users").document(user.uid).get()
             .addOnSuccessListener { doc ->
                 val lang = doc.getString("language")
+//                if (!lang.isNullOrBlank()) {
+//                    LocaleManager.applyLanguageTag(lang)
+//                }
                 if (!lang.isNullOrBlank()) {
-                    LocaleManager.applyLanguageTag(lang)
+                    LocaleManager.applyLanguageTag(lang) // safely applies the language
+                    recreate() // refresh LoginActivity so UI updates
                 }
+
                 navigateToDashboard()
             }
             .addOnFailureListener {

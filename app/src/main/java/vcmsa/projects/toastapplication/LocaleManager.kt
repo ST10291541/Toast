@@ -8,6 +8,7 @@ object LocaleManager {
     private const val PREFS_NAME = "AppSettings"
     private const val KEY_APP_LANGUAGE = "App_Language"
 
+    // Save the selected language
     fun saveLanguage(context: Context, languageTag: String) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
@@ -15,20 +16,21 @@ object LocaleManager {
             .apply()
     }
 
+    // Get saved language, default to English
     fun getSavedLanguage(context: Context): String {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .getString(KEY_APP_LANGUAGE, "en") ?: "en"
     }
 
+    // Apply saved locale (Activity context required)
     fun applySavedLocale(context: Context) {
         val lang = getSavedLanguage(context)
         applyLanguageTag(lang)
     }
 
+    // Apply a language tag globally
     fun applyLanguageTag(languageTag: String) {
         val locales = LocaleListCompat.forLanguageTags(languageTag)
         AppCompatDelegate.setApplicationLocales(locales)
     }
 }
-
-
