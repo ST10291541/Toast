@@ -101,8 +101,12 @@ class MainActivity : AppCompatActivity() {
                         "dietaryRequirements" to event.dietaryRequirements
                     )
                     eventRef.set(eventMap).await()
-                    val syncedEvent = event.copy(isSynced = true)
-                    eventDao.update(syncedEvent)
+
+                    // Fix: Use the database instance to get the DAO, then call markAsSynced
+                    withContext(Dispatchers.IO) {
+                        localDatabase.eventDao().markAsSynced(event.id)
+                    }
+
                     Log.d("Sync", "Event uploaded successfully: ${event.id}")
                 }
             } catch (e: Exception) {
@@ -112,7 +116,6 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("Sync", "Offline events sync completed.")
     }
-
 
     override fun onResume() {
         super.onResume()

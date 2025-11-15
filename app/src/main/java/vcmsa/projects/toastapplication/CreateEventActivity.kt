@@ -183,11 +183,19 @@ class CreateEventActivity : AppCompatActivity() {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val response = RetrofitClient.api.createEvent(authHeader, event)
-                        runOnUiThread {
-                            if (response.isSuccessful) {
+                        if (response.isSuccessful) {
+                            // Also sync any previously unsynced events
+                            try {
+                                repo.syncEventsToFirestore()
+                            } catch (e: Exception) {
+                                // Silent - sync will retry later
+                            }
+                            runOnUiThread {
                                 Toast.makeText(this@CreateEventActivity, "Event created successfully!", Toast.LENGTH_SHORT).show()
                                 finish()
-                            } else {
+                            }
+                        } else {
+                            runOnUiThread {
                                 Toast.makeText(this@CreateEventActivity, "Error: ${response.code()} ${response.message()}", Toast.LENGTH_LONG).show()
                             }
                         }

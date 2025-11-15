@@ -18,6 +18,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import vcmsa.projects.toastapplication.local.EventRepo
+import android.content.Context
+import android.net.ConnectivityManager
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -135,14 +137,15 @@ class DashboardActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.chipMeet).setOnClickListener { filterEventsByCategory("Meet-Up") }
         findViewById<LinearLayout>(R.id.chipGeneral).setOnClickListener { filterEventsByCategory("General") }
 
-        // Load events from Firestore
-        loadEvents()
+        // Sync offline events first if online, then load events
+        syncOfflineEventsAndLoad()
     }
 
     override fun onResume() {
         super.onResume()
         refreshUserProfile()
-        loadEvents() // Reload events when returning to dashboard
+        // Sync offline events first if online, then refresh events
+        syncOfflineEventsAndLoad()
     }
 
     private fun refreshUserProfile() {
@@ -304,5 +307,38 @@ class DashboardActivity : AppCompatActivity() {
     private fun updateEventCount() {
         val count = filteredEvents.size
         tvEventCount.text = "(${count} ${if (count == 1) "event" else "events"})"
+    }
+
+    private fun syncOfflineEventsAndLoad() {
+        if (!isOnline()) {
+            // If offline, still try to load events (might have cached data)
+            loadEvents()
+            return
+        }
+
+        val repo = EventRepo(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Sync unsynced events to Firestore
+                // This uses the same document ID (UUID), so it will overwrite if exists, not duplicate
+                repo.syncEventsToFirestore()
+                // After sync completes, reload events from Firestore
+                // Since sync marks events as synced, they won't sync again
+                runOnUiThread {
+                    loadEvents()
+                }
+            } catch (e: Exception) {
+                // If sync fails, still try to load existing events
+                runOnUiThread {
+                    loadEvents()
+                }
+            }
+        }
+    }
+
+    private fun isOnline(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = cm.activeNetworkInfo
+        return network != null && network.isConnected
     }
 }

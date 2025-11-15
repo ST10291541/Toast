@@ -1,7 +1,9 @@
 package vcmsa.projects.toastapplication
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -62,8 +64,8 @@ class MyEventsActivity : AppCompatActivity() {
         )
         eventsRecyclerView.adapter = adapter
 
-        // Load events once
-        loadEvents()
+        // Sync offline events first if online, then refresh events
+        syncOfflineEventsAndLoad()
 
         // FAB to create events
         findViewById<FloatingActionButton>(R.id.fabCreateEvent).setOnClickListener {
@@ -272,6 +274,38 @@ class MyEventsActivity : AppCompatActivity() {
                 pollResponses = emptyMap()
             )
         }
+    }
+    private fun syncOfflineEventsAndLoad() {
+        if (!isOnline()) {
+            // If offline, still try to load events (might have cached data)
+            loadEvents()
+            return
+        }
+
+        val repo = EventRepo(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Sync unsynced events to Firestore
+                // This uses the same document ID (UUID), so it will overwrite if exists, not duplicate
+                repo.syncEventsToFirestore()
+                // After sync completes, reload events from Firestore
+                // Since sync marks events as synced, they won't sync again
+                runOnUiThread {
+                    loadEvents()
+                }
+            } catch (e: Exception) {
+                // If sync fails, still try to load existing events
+                runOnUiThread {
+                    loadEvents()
+                }
+            }
+        }
+    }
+
+    private fun isOnline(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = cm.activeNetworkInfo
+        return network != null && network.isConnected
     }
 
     companion object {

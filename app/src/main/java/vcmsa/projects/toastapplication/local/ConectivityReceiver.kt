@@ -11,32 +11,61 @@ import kotlinx.coroutines.launch
 
 class ConnectivityReceiver(val context: Context) {
 
+    private val eventRepo = EventRepo(context)
+
+    // One shared coroutine scope for sync work
+    private val scope = CoroutineScope(Dispatchers.IO)
+
     private val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+
+        // Fires when internet becomes available
         override fun onAvailable(network: Network) {
-            // Device is online, sync events
-            CoroutineScope(Dispatchers.IO).launch {
-                EventRepo(context).syncEventsToFirestore()
+            if (isOnline()) {
+                scope.launch {
+                    eventRepo.syncEventsToFirestore()
+                }
             }
+        }
+
+        // Optional: When network is lost
+        override fun onLost(network: Network) {
+            // No action needed, but prevents weird callback issues
         }
     }
 
     fun startObserving() {
-        val request = NetworkRequest.Builder().build()
+
+        val request = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+
         cm.registerNetworkCallback(request, networkCallback)
 
-        // Immediately check if online
+        // Immediate check on app startup
         if (isOnline()) {
-            CoroutineScope(Dispatchers.IO).launch {
-                EventRepo(context).syncEventsToFirestore()
+            scope.launch {
+                eventRepo.syncEventsToFirestore()
             }
         }
     }
 
+    // Clean up if activity/service stops
+    fun stopObserving() {
+        try {
+            cm.unregisterNetworkCallback(networkCallback)
+        } catch (e: Exception) {
+            // Already unregistered or never registered
+        }
+    }
+
+    // Stronger online check
     private fun isOnline(): Boolean {
-        val network = cm.activeNetwork
-        val capabilities = cm.getNetworkCapabilities(network)
-        return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        val network = cm.activeNetwork ?: return false
+        val caps = cm.getNetworkCapabilities(network) ?: return false
+
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                && caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
     }
 }

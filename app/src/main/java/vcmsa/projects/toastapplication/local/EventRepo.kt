@@ -25,10 +25,20 @@ class EventRepo(context: Context) {
     }
 
     suspend fun syncEventsToFirestore() {
-        val unsynced = eventDao.getUnsyncedEvents()
         val currentUser = auth.currentUser ?: return
 
+        // refresh token before syncing
+        try {
+            currentUser.getIdToken(true).await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return  // cannot sync without valid token
+        }
+
+        val unsynced = eventDao.getUnsyncedEvents()
+
         for (event in unsynced) {
+
             val eventData = hashMapOf(
                 "title" to event.title,
                 "description" to event.description,
@@ -44,12 +54,17 @@ class EventRepo(context: Context) {
                 "createdAt" to event.createdAt.toString()
             )
 
-            val docRef = db.collection("events").document(event.id)
-            docRef.set(eventData).await()
+            try {
+                val docRef = db.collection("events").document(event.id)
+                docRef.set(eventData).await()
 
-            // Mark as synced
-            val syncedEvent = event.copy(isSynced = true)
-            eventDao.update(syncedEvent)
+                // Mark as synced
+                eventDao.markAsSynced(event.id)
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // do NOT return; continue syncing the rest
+            }
         }
     }
 }
