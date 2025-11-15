@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+        android:name=".ToastApplication"
         android:allowBackup="true"
         android:icon="@drawable/toast_logo"
         android:label="@string/app_name"
@@ -67,12 +68,14 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".local.ConnectivityReceiver"
+        <receiver android:name=".local.ConnecttivityReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
+
+
 
     </application>
 

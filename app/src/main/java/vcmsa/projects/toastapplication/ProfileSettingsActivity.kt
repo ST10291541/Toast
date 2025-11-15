@@ -1,40 +1,26 @@
 package vcmsa.projects.toastapplication
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import android.app.AlertDialog
-import android.content.Intent
 import android.os.Handler
 import android.os.Looper
-import android.widget.Button
-import android.widget.ImageButton
-import com.bumptech.glide.Glide
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
-import vcmsa.projects.toastapplication.databinding.ActivityProfileSettingsBinding
 import android.view.View
 import android.widget.*
-import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.Translation
-import com.google.mlkit.nl.translate.TranslatorOptions
-import java.util.Locale
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
+import com.google.firebase.firestore.FirebaseFirestore
+import vcmsa.projects.toastapplication.databinding.ActivityProfileSettingsBinding
+import android.app.AlertDialog
 
 class ProfileSettingsActivity : AppCompatActivity() {
+
     private val PICK_IMAGE_REQUEST = 1001
     private var selectedImageUri: Uri? = null
-
-    // Translator UI elements - commented out as views don't exist in layout
-    // private lateinit var inputText: EditText
-    // private lateinit var spinnerFrom: Spinner
-    // private lateinit var spinnerTo: Spinner
-    // private lateinit var btnTranslate: Button
-    // private lateinit var translatedText: TextView
-    // private lateinit var progressBar: ProgressBar
 
     private lateinit var spinnerLanguages: Spinner
     private val languageMap = mapOf(
@@ -43,6 +29,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         "Zulu" to "zu",
         "Xhosa" to "xh"
     )
+    private var isLanguageSpinnerInitialized = false
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -51,27 +38,15 @@ class ProfileSettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        try {
-            binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
-            setContentView(binding.root)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            // If layout inflation fails, show error and finish
-            Toast.makeText(this, "Error loading profile screen", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
+        LocaleManager.applySavedLocale(this)
 
-        // Set locale after content view is set (safer approach)
-        try {
-            setAppLocale(getPreferredLanguage())
-        } catch (e: Exception) {
-            // If locale setting fails, continue with default
-            e.printStackTrace()
-        }
+        binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
+        // User check
         val user = auth.currentUser
         if (user == null) {
             Toast.makeText(this, "You must be signed in to edit profile.", Toast.LENGTH_SHORT).show()
@@ -79,226 +54,84 @@ class ProfileSettingsActivity : AppCompatActivity() {
             return
         }
 
-        try {
-            findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
-                startActivity(Intent(this, DashboardActivity::class.java))
-            }
-
-            val btnLogout = findViewById<MaterialButton>(R.id.btnLogout)
-            btnLogout.setOnClickListener {
-                FirebaseAuth.getInstance().signOut() // Sign out the user
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error initializing UI: ${e.message}", Toast.LENGTH_LONG).show()
-        }
-
-        // Load profile info
-        db = FirebaseFirestore.getInstance()
+        setupUI()
         loadUserProfile()
+        setupLanguageSpinner()
+    }
 
-        // pick image
-        binding.editProfileImage.setOnClickListener {
-            pickImageFromDevice()
+    // --- UI SETUP ---
+    private fun setupUI() {
+        binding.btnBack.setOnClickListener {
+            startActivity(Intent(this, DashboardActivity::class.java))
         }
 
-        // save button
-        binding.btnSave.setOnClickListener {
-            saveDetails()
-        }
-
-        findViewById<Button>(R.id.changePasswordBtn).setOnClickListener {
-            val intent = Intent(this, ResetPasswordActivity::class.java)
+        binding.btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
+            finish()
         }
 
-        binding.deleteAccountBtn.setOnClickListener {
-            val user = auth.currentUser
+        binding.editProfileImage.setOnClickListener { pickImageFromDevice() }
 
-            if (user == null) {
-                Toast.makeText(this, "No user signed in", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+        binding.btnSave.setOnClickListener { saveDetails() }
 
-            // Confirm deletion
-            AlertDialog.Builder(this)
-                .setTitle("Delete Account")
-                .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
-                .setPositiveButton("Delete") { _, _ ->
-
-                    user.delete()
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show()
-
-                            // Return to login after 2 seconds
-                            Handler(mainLooper).postDelayed({
-                                val intent = Intent(this, LoginActivity::class.java)
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                startActivity(intent)
-                                finish()
-                            }, 2000)
-                        }
-                        .addOnFailureListener { e ->
-                            if (e is FirebaseAuthRecentLoginRequiredException) {
-                                Toast.makeText(
-                                    this,
-                                    "Please log in again to delete your account",
-                                    Toast.LENGTH_LONG
-                                ).show()
-
-                                val intent = Intent(this, LoginActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            } else {
-                                Toast.makeText(this, "Failed to delete account: ${e.message}", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
+        binding.changePasswordBtn.setOnClickListener {
+            startActivity(Intent(this, ResetPasswordActivity::class.java))
         }
 
-        // Translator UI elements - commented out as views don't exist in layout
-        // If you want to add translator functionality, add these views to activity_profile_settings.xml:
-        // - EditText with id: inputText
-        // - Spinner with id: spinnerFrom
-        // - Spinner with id: spinnerTo
-        // - Button with id: btnTranslate
-        // - TextView with id: translatedText
-        // - ProgressBar with id: progressBar
-        /*
-        inputText = findViewById(R.id.inputText)
-        spinnerFrom = findViewById(R.id.spinnerFrom)
-        spinnerTo = findViewById(R.id.spinnerTo)
-        btnTranslate = findViewById(R.id.btnTranslate)
-        translatedText = findViewById(R.id.translatedText)
-        progressBar = findViewById(R.id.progressBar)
+        binding.deleteAccountBtn.setOnClickListener { confirmDeleteAccount() }
+    }
 
-        // Set up the spinners
-        val translatorLanguages = listOf("English", "Afrikaans")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, translatorLanguages)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        spinnerFrom.adapter = adapter
-        spinnerTo.adapter = adapter
-
-        // Default selection
-        spinnerFrom.setSelection(translatorLanguages.indexOf("English"))
-        spinnerTo.setSelection(translatorLanguages.indexOf("Afrikaans"))
-
-        btnTranslate.setOnClickListener {
-            val text = inputText.text.toString().trim()
-            if (text.isEmpty()) {
-                Toast.makeText(this, "Please enter text to translate", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val fromLangName = spinnerFrom.selectedItem.toString()
-            val toLangName = spinnerTo.selectedItem.toString()
-
-            val fromLangCode = when (fromLangName) {
-                "English" -> TranslateLanguage.ENGLISH
-                "Afrikaans" -> TranslateLanguage.AFRIKAANS
-                else -> TranslateLanguage.ENGLISH
-            }
-
-            val toLangCode = when (toLangName) {
-                "English" -> TranslateLanguage.ENGLISH
-                "Afrikaans" -> TranslateLanguage.AFRIKAANS
-                else -> TranslateLanguage.ENGLISH
-            }
-
-            if (fromLangCode == toLangCode) {
-                translatedText.text = text
-                return@setOnClickListener
-            }
-
-            // Show progress bar
-            progressBar.visibility = View.VISIBLE
-            translatedText.text = ""
-
-            val options = TranslatorOptions.Builder()
-                .setSourceLanguage(fromLangCode)
-                .setTargetLanguage(toLangCode)
-                .build()
-
-            val translator = Translation.getClient(options)
-
-            // Download the model if needed
-            translator.downloadModelIfNeeded()
-                .addOnSuccessListener {
-                    translator.translate(text)
-                        .addOnSuccessListener { translated ->
-                            progressBar.visibility = View.GONE
-                            translatedText.text = translated
-                        }
-                        .addOnFailureListener { e ->
-                            progressBar.visibility = View.GONE
-                            Toast.makeText(this, "Translation failed: ${e.message}", Toast.LENGTH_LONG).show()
-                        }
-                }
-                .addOnFailureListener {
-                    progressBar.visibility = View.GONE
-                    Toast.makeText(this, "Failed to download language model. Check your internet.", Toast.LENGTH_LONG).show()
-                }
-        }
-        */
-
-        // 🌍 Set up the preferred language spinner
-        spinnerLanguages = binding.spinnerLanguages // add a spinner in XML for this
-        val langAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languageMap.keys.toList())
+    // --- LANGUAGE SPINNER ---
+    private fun setupLanguageSpinner() {
+        spinnerLanguages = binding.spinnerLanguages
+        val langAdapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, languageMap.keys.toList())
         langAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerLanguages.adapter = langAdapter
 
-        // Set current selection based on saved preference
-        val currentLang = getPreferredLanguage()
-        val currentIndex = languageMap.values.indexOf(currentLang)
-        if (currentIndex >= 0) spinnerLanguages.setSelection(currentIndex)
+        val savedLang = getPreferredLanguage(this)
+        val savedIndex = languageMap.values.indexOf(savedLang)
+        if (savedIndex >= 0) spinnerLanguages.setSelection(savedIndex, false)
 
         spinnerLanguages.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if (!isLanguageSpinnerInitialized) return
+
                 val selectedLangCode = languageMap.values.toList()[position]
-                savePreferredLanguage(selectedLangCode)
-                setAppLocale(selectedLangCode)
-                recreate() // restart activity to apply language
+                val currentLang = LocaleManager.getSavedLanguage(this@ProfileSettingsActivity)
+
+                if (selectedLangCode != currentLang) {
+                    LocaleManager.saveLanguage(this@ProfileSettingsActivity, selectedLangCode)
+                    LocaleManager.applyLanguageTag(selectedLangCode)
+                    recreate() // restart this activity to apply new locale
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-
     }
 
     // --- LANGUAGE HELPERS ---
     private fun savePreferredLanguage(langCode: String) {
         val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
-        prefs.edit().putString("App_Language", langCode).apply()
+        prefs.edit().putString("App_Language", langCode).commit()
     }
 
-    private fun getPreferredLanguage(): String {
-        val prefs = getSharedPreferences("AppSettings", MODE_PRIVATE)
+    private fun getPreferredLanguage(context: Context): String {
+        val prefs = context.getSharedPreferences("AppSettings", MODE_PRIVATE)
         return prefs.getString("App_Language", "en")!! // default English
     }
 
-    private fun setAppLocale(langCode: String) {
-        try {
-            val locale = Locale(langCode)
-            Locale.setDefault(locale)
-            val config = resources.configuration
-            config.setLocale(locale)
-            @Suppress("DEPRECATION")
-            resources.updateConfiguration(config, resources.displayMetrics)
-        } catch (e: Exception) {
-            // If locale setting fails, continue with default locale
-            e.printStackTrace()
-        }
-    }
 
-    // --- EXISTING FUNCTIONS ---
+    // --- PROFILE FUNCTIONS ---
     private fun loadUserProfile() {
         val uid = auth.currentUser!!.uid
         db.collection("users").document(uid).get()
@@ -320,9 +153,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
     }
 
     private fun pickImageFromDevice() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "image/*"
-        }
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
         startActivityForResult(Intent.createChooser(intent, "Select profile picture"), PICK_IMAGE_REQUEST)
     }
 
@@ -356,9 +187,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
                 val existingImageUri = if (doc.exists()) doc.getString("profileImageUri") else null
                 val imageUriToSave = selectedImageUri?.toString() ?: existingImageUri
 
-                saveUserDoc(uid, first, last, phoneNum, imageUriToSave) {
-                    snack.dismiss()
-                }
+                saveUserDoc(uid, first, last, phoneNum, imageUriToSave) { snack.dismiss() }
             }
             .addOnFailureListener { e ->
                 snack.dismiss()
@@ -367,12 +196,8 @@ class ProfileSettingsActivity : AppCompatActivity() {
     }
 
     private fun saveUserDoc(
-        uid: String,
-        first: String,
-        last: String,
-        phone: String,
-        imageUri: String?,
-        onComplete: () -> Unit
+        uid: String, first: String, last: String,
+        phone: String, imageUri: String?, onComplete: () -> Unit
     ) {
         val map = hashMapOf<String, Any>(
             "firstName" to first,
@@ -392,11 +217,46 @@ class ProfileSettingsActivity : AppCompatActivity() {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     finish()
-                }, 5000) // 5000 milliseconds = 5 seconds
+                }, 2000)
             }
             .addOnFailureListener { e ->
                 onComplete()
                 Toast.makeText(this, "Failed to save: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun confirmDeleteAccount() {
+        val user = auth.currentUser ?: return
+
+        AlertDialog.Builder(this)
+            .setTitle("Delete Account")
+            .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+            .setPositiveButton("Delete") { _, _ ->
+                user.delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show()
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            val intent = Intent(this, LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
+                        }, 2000)
+                    }
+                    .addOnFailureListener { e ->
+                        if (e is FirebaseAuthRecentLoginRequiredException) {
+                            Toast.makeText(
+                                this,
+                                "Please log in again to delete your account",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            startActivity(Intent(this, LoginActivity::class.java))
+                            finish()
+                        } else {
+                            Toast.makeText(this, "Failed to delete account: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 }
