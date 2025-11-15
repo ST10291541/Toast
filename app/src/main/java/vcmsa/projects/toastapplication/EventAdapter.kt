@@ -44,7 +44,9 @@ class EventAdapter(
             tvEventCategory.text = event.category
 
             //  Get attendees for this event
-            val guests = eventGuestMap[event.id] ?: emptyList()
+            // Try to find guests using the event ID, or by stripping "offline_" prefix
+            val actualEventId = event.id.removePrefix("offline_")
+            val guests = eventGuestMap[event.id] ?: eventGuestMap[actualEventId] ?: emptyList()
             val goingCount = guests.count { it.status == "going" }
             tvAttendeeCount.text = goingCount.toString()
 

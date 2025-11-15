@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,9 +32,10 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var eventsRecyclerView: RecyclerView
     private lateinit var eventAdapter: EventAdapter
 
-    private var allEvents: List<Event> = listOf()
+    private var allEvents: MutableList<Event> = mutableListOf()
     private var filteredEvents: MutableList<Event> = mutableListOf()
     private val eventGuestMap: MutableMap<String, List<Guest>> = mutableMapOf()
+    private val guestListeners: MutableMap<String, ListenerRegistration> = mutableMapOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,6 +150,11 @@ class DashboardActivity : AppCompatActivity() {
         syncOfflineEventsAndLoad()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        guestListeners.values.forEach { it.remove() } // remove all listeners
+    }
+
     private fun refreshUserProfile() {
         val db = FirebaseFirestore.getInstance()
         auth.currentUser?.let { user ->
@@ -188,16 +195,19 @@ class DashboardActivity : AppCompatActivity() {
         val currentUserId = auth.currentUser?.uid ?: return
 
         // Clear previous lists
-        allEvents = emptyList()
+        allEvents.clear()
         filteredEvents.clear()
         eventGuestMap.clear()
+        guestListeners.values.forEach { it.remove() }
+        guestListeners.clear()
 
         // Step 1: Load offline events first
         CoroutineScope(Dispatchers.IO).launch {
             val offlineEvents = getOfflineEvents().map { it.copy(id = "offline_${it.id}") }
 
             runOnUiThread {
-                allEvents = offlineEvents
+                allEvents.clear()
+                allEvents.addAll(offlineEvents)
                 filteredEvents.clear()
                 filteredEvents.addAll(allEvents)
                 eventAdapter.updateData(filteredEvents, eventGuestMap)
@@ -229,18 +239,20 @@ class DashboardActivity : AppCompatActivity() {
                         )
                     }
 
-                    // Merge offline + online, avoiding duplicates
-                    val mergedEvents = (offlineEvents + onlineEvents)
+                    // Merge offline + online, preferring online events (they have the correct ID)
+                    // Put online events first so they're kept when using distinctBy
+                    val mergedEvents = (onlineEvents + offlineEvents)
                         .distinctBy { it.id.removePrefix("offline_") }
 
-                    allEvents = mergedEvents
+                    allEvents.clear()
+                    allEvents.addAll(mergedEvents)
                     filteredEvents.clear()
                     filteredEvents.addAll(mergedEvents)
                     eventAdapter.updateData(filteredEvents, eventGuestMap)
                     updateEventCount()
 
-                    // Load guest RSVPs for online events
-                    loadGuestDataForEvents(onlineEvents)
+                    // Listen to RSVPs for online events (real-time updates)
+                    onlineEvents.forEach { listenToGuests(it) }
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(this@DashboardActivity, "Error loading events: ${exception.message}", Toast.LENGTH_LONG).show()
@@ -248,26 +260,56 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadGuestDataForEvents(events: List<Event>) {
+    private fun listenToGuests(event: Event) {
+        guestListeners[event.id]?.remove()
+
         val db = FirebaseFirestore.getInstance()
-        for (event in events) {
-            db.collection("events").document(event.id).collection("rsvps")
-                .get()
-                .addOnSuccessListener { snapshot ->
-                    val guests = snapshot.documents.map { doc ->
-                        Guest(
-                            guestId = doc.id,
-                            userName = doc.getString("userName") ?: "Anonymous",
-                            status = doc.getString("status") ?: "Not set",
-                            dietaryChoice = doc.getString("dietaryChoice") ?: "Not specified",
-                            musicChoice = doc.getString("musicChoice") ?: "Not specified"
-                        )
-                    }
-                    eventGuestMap[event.id] = guests
-                    eventAdapter.updateData(filteredEvents, eventGuestMap)
-                    updateEventCount()
-                }
+        val rsvpsRef = db.collection("events").document(event.id).collection("rsvps")
+        val guestMap = mutableMapOf<String, Guest>()
+
+        val listener = rsvpsRef.addSnapshotListener { snapshot, e ->
+            if (e != null || snapshot == null) return@addSnapshotListener
+
+            guestMap.clear()
+            for (doc in snapshot.documents) {
+                val guestId = doc.id
+                val userName = doc.getString("userName") ?: "Anonymous"
+                val status = doc.getString("status") ?: "Not set"
+                val dietaryChoice = doc.getString("dietaryChoice") ?: "Not specified"
+                val musicChoice = doc.getString("musicChoice") ?: "Not specified"
+
+                guestMap[guestId] = Guest(
+                    guestId = guestId,
+                    userName = userName,
+                    status = status,
+                    dietaryChoice = dietaryChoice,
+                    musicChoice = musicChoice
+                )
+            }
+
+            // Update guest map - use the actual event ID (without prefix)
+            eventGuestMap[event.id] = guestMap.values.toList()
+            // Also update with "offline_" prefix if an event with that prefix exists
+            val eventWithPrefix = allEvents.find { it.id.removePrefix("offline_") == event.id }
+            if (eventWithPrefix != null && eventWithPrefix.id != event.id) {
+                eventGuestMap[eventWithPrefix.id] = guestMap.values.toList()
+            }
+
+            // Calculate and update attendee count (count guests with status "going")
+            val goingCount = guestMap.values.count { it.status.equals("going", ignoreCase = true) }
+            
+            // Update attendee count in allEvents list - check both with and without prefix
+            allEvents.find { it.id == event.id || it.id.removePrefix("offline_") == event.id }?.attendeeCount = goingCount
+            
+            // Update attendee count in filteredEvents list - check both with and without prefix
+            filteredEvents.find { it.id == event.id || it.id.removePrefix("offline_") == event.id }?.attendeeCount = goingCount
+
+            // Refresh adapter to show updated attendee counts
+            eventAdapter.updateData(filteredEvents, eventGuestMap)
+            updateEventCount()
         }
+
+        guestListeners[event.id] = listener
     }
 
     // Example function to get offline events
@@ -300,6 +342,7 @@ class DashboardActivity : AppCompatActivity() {
         } else {
             filteredEvents.addAll(allEvents.filter { it.category.equals(category, ignoreCase = true) })
         }
+        // Make sure to preserve attendee counts when filtering
         eventAdapter.updateData(filteredEvents, eventGuestMap)
         updateEventCount()
     }

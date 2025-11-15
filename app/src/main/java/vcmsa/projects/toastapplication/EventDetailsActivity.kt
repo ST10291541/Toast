@@ -3,6 +3,7 @@ package vcmsa.projects.toastapplication
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -28,7 +29,7 @@ class EventDetailsActivity : AppCompatActivity() {
     private lateinit var guestsRecyclerView: RecyclerView
 
     private val db = FirebaseFirestore.getInstance()
-    private var event: Event? = null
+    private var event: Any? = null // can be Event or EventEntity
     private val guestList = mutableListOf<Guest>()
     private lateinit var guestAdapter: GuestAdapter
 
@@ -44,8 +45,8 @@ class EventDetailsActivity : AppCompatActivity() {
         guestsRecyclerView.layoutManager = LinearLayoutManager(this)
         guestsRecyclerView.adapter = guestAdapter
 
-        val eventFromIntent = intent.getSerializableExtra("event") as? Event
-        if (eventFromIntent == null || eventFromIntent.id.isNullOrBlank()) {
+        val eventFromIntent = intent.getSerializableExtra("event")
+        if (eventFromIntent == null) {
             Toast.makeText(this, "Event data not found", Toast.LENGTH_SHORT).show()
             finish()
             return
@@ -53,7 +54,13 @@ class EventDetailsActivity : AppCompatActivity() {
 
         event = eventFromIntent
         bindEventData()
-        loadGuestsAndPreferences()
+
+        // Load guest info for any event with a valid Firebase ID
+        val eventId = getEventId()
+        if (!eventId.isNullOrBlank()) {
+            // Check if event has been synced to Firestore and load latest data
+            checkAndLoadSyncedEvent(eventId)
+        }
     }
 
     private fun initViews() {
@@ -70,83 +77,178 @@ class EventDetailsActivity : AppCompatActivity() {
     }
 
     private fun bindEventData() {
-        event?.let { ev ->
-            eventTitle.text = ev.title
-            aboutDescription.text = ev.description
-            eventDate.text = "Date: ${ev.date}"
-            eventTime.text = "Start: ${ev.time}"
-            eventLocation.text = "Location: ${ev.location}"
-            categoryText.text = "Category: ${ev.category}"
+        val evTitle = when (event) {
+            is Event -> (event as Event).title
+            is EventEntity -> (event as EventEntity).title
+            else -> "Untitled Event"
+        }
+        Log.d("EventDetails", "Binding event data - Title: $evTitle")
 
-            if (!ev.googleDriveLink.isNullOrBlank()) {
-                btnGoogleDrive.text = "Open Google Drive Folder"
-                btnGoogleDrive.isEnabled = true
-                btnGoogleDrive.setOnClickListener {
-                    try {
-                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(ev.googleDriveLink)))
-                    } catch (e: Exception) {
-                        Toast.makeText(this, "Cannot open link: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+        val evDescription = when (event) {
+            is Event -> (event as Event).description
+            is EventEntity -> (event as EventEntity).description
+            else -> ""
+        }
+
+        val evDate = when (event) {
+            is Event -> (event as Event).date
+            is EventEntity -> (event as EventEntity).date
+            else -> ""
+        }
+
+        val evTime = when (event) {
+            is Event -> (event as Event).time
+            is EventEntity -> (event as EventEntity).time
+            else -> ""
+        }
+
+        val evLocation = when (event) {
+            is Event -> (event as Event).location
+            is EventEntity -> (event as EventEntity).location
+            else -> ""
+        }
+
+        val evCategory = when (event) {
+            is Event -> (event as Event).category
+            is EventEntity -> (event as EventEntity).category
+            else -> ""
+        }
+
+        val evGoogleDrive = when (event) {
+            is Event -> (event as Event).googleDriveLink
+            is EventEntity -> (event as EventEntity).googleDriveLink
+            else -> null
+        }
+
+        eventTitle.text = evTitle
+        aboutDescription.text = evDescription
+        eventDate.text = "Date: $evDate"
+        eventTime.text = "Start: $evTime"
+        eventLocation.text = "Location: $evLocation"
+        categoryText.text = "Category: $evCategory"
+
+        if (!evGoogleDrive.isNullOrBlank()) {
+            btnGoogleDrive.text = "Open Google Drive Folder"
+            btnGoogleDrive.isEnabled = true
+            btnGoogleDrive.setOnClickListener {
+                try {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(evGoogleDrive)))
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Cannot open link: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                btnGoogleDrive.text = "No Google Drive link available"
-                btnGoogleDrive.isEnabled = false
             }
+        } else {
+            btnGoogleDrive.text = "No Google Drive link available"
+            btnGoogleDrive.isEnabled = false
         }
     }
 
-    private fun loadGuestsAndPreferences() {
-        if (isOfflineEvent()) {
-            // Offline: show only local event info, skip RSVPs
-            guestList.clear()
-            attendeeCountText.text = "Attendees: 0"
-            guestAdapter.notifyDataSetChanged()
-            return
+    private fun getEventId(): String? {
+        val rawId = when (event) {
+            is Event -> (event as Event).id
+            is EventEntity -> (event as EventEntity).id
+            else -> null
+        }
+        // Strip "offline_" prefix if present - events synced to Firestore use the original ID
+        val cleanId = rawId?.removePrefix("offline_")
+        Log.d("EventDetails", "Raw event ID: $rawId, Clean event ID: $cleanId")
+        return cleanId
+    }
+
+    private fun checkAndLoadSyncedEvent(eventId: String) {
+        Log.d("EventDetails", "Checking for synced event with ID: $eventId")
+        // Check if event exists in Firestore (it might have been synced)
+        db.collection("events").document(eventId).get()
+            .addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    Log.d("EventDetails", "Event found in Firestore, loading synced data")
+                    // Event exists in Firestore, load the latest data
+                    val syncedEvent = Event(
+                        id = doc.id,
+                        title = doc.getString("title") ?: "",
+                        description = doc.getString("description") ?: "",
+                        date = doc.getString("date") ?: "",
+                        time = doc.getString("time") ?: "",
+                        location = doc.getString("location") ?: "",
+                        category = doc.getString("category") ?: "",
+                        createdAt = doc.getString("createdAt") ?: "",
+                        hostEmail = doc.getString("hostEmail") ?: "",
+                        hostUserId = doc.getString("hostUserId") ?: "",
+                        attendeeCount = (doc.getLong("attendeeCount") ?: 0).toInt(),
+                        googleDriveLink = doc.getString("googleDriveLink") ?: "",
+                        dietaryRequirements = doc.get("dietaryRequirements") as? List<String> ?: emptyList(),
+                        musicSuggestions = doc.get("musicSuggestions") as? List<String> ?: emptyList(),
+                        pollResponses = doc.get("pollResponses") as? Map<String, Any> ?: emptyMap()
+                    )
+                    // Update the event with synced data
+                    event = syncedEvent
+                    bindEventData()
+                    // Load guests and preferences only if event exists in Firestore
+                    loadGuestsAndPreferences(eventId)
+                } else {
+                    Log.d("EventDetails", "Event not found in Firestore (might not be synced yet)")
+                    // Event doesn't exist in Firestore yet - don't try to load guests
+                    // The event details are already displayed from the local data
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("EventDetails", "Error checking Firestore for event: ${e.message}", e)
+                // If there's an error, don't try to load guests
+                // The event details are already displayed from the local data
+            }
+    }
+
+    private fun loadGuestsAndPreferences(eventId: String) {
+        val eventRef = db.collection("events").document(eventId)
+        val rsvpsRef = eventRef.collection("rsvps")
+
+        val currentRsvps = mutableMapOf<String, Guest>()
+        var pollResponses: Map<String, Map<String, Any>> = emptyMap()
+
+        // Listen to event doc for pollResponses
+        eventRef.addSnapshotListener { snapshot, error ->
+            if (error != null || snapshot == null || !snapshot.exists()) return@addSnapshotListener
+            pollResponses = snapshot.get("pollResponses") as? Map<String, Map<String, Any>> ?: emptyMap()
+            updateGuestList(currentRsvps, pollResponses)
         }
 
-        val evId = event?.id ?: return
-        val rsvpsRef = db.collection("events").document(evId).collection("rsvps")
-        val eventRef = db.collection("events").document(evId)
+        // Listen to RSVPs
+        rsvpsRef.addSnapshotListener { snapshot, error ->
+            if (error != null || snapshot == null) return@addSnapshotListener
 
-        // Listen for event document (pollResponses)
-        eventRef.addSnapshotListener { eventSnapshot, e ->
-            if (e != null || eventSnapshot == null || !eventSnapshot.exists()) return@addSnapshotListener
-            val pollResponses = eventSnapshot.get("pollResponses") as? Map<String, Map<String, Any>> ?: emptyMap()
+            for (doc in snapshot.documents) {
+                val guestId = doc.id
+                val userName = doc.getString("userName") ?: "Anonymous"
+                val status = doc.getString("status") ?: "Not set"
 
-            // Now get RSVPs
-            rsvpsRef.addSnapshotListener { rsvpSnapshot, rsvpError ->
-                if (rsvpError != null || rsvpSnapshot == null) return@addSnapshotListener
+                val pollData = pollResponses[guestId]
+                val dietary = pollData?.get("dietaryChoice") as? String ?: "Not specified"
+                val music = pollData?.get("musicChoice") as? String ?: "Not specified"
 
-                val guests = mutableListOf<Guest>()
-                for (rsvpDoc in rsvpSnapshot.documents) {
-                    val guestId = rsvpDoc.id
-                    val userName = rsvpDoc.getString("userName") ?: "Anonymous"
-                    val status = rsvpDoc.getString("status") ?: "Not set"
-
-                    val pollData = pollResponses[guestId]
-                    val dietary = pollData?.get("dietaryChoice") as? String ?: "Not specified"
-                    val music = pollData?.get("musicChoice") as? String ?: "Not specified"
-
-                    guests.add(Guest(guestId, userName, status, dietary, music))
-                }
-
-                guestList.clear()
-                guestList.addAll(guests)
-                attendeeCountText.text = "Attendees: ${guestList.count { it.status == "going" }}"
-                guestAdapter.notifyDataSetChanged()
+                currentRsvps[guestId] = Guest(guestId, userName, status, dietary, music)
             }
+
+            // Remove guests no longer in RSVPs
+            val existingIds = snapshot.documents.map { it.id }
+            currentRsvps.keys.retainAll(existingIds)
+            updateGuestList(currentRsvps, pollResponses)
         }
     }
 
-    private fun updateGuestList(guestMap: Map<String, Guest>) {
+    private fun updateGuestList(
+        rsvps: Map<String, Guest>,
+        pollResponses: Map<String, Map<String, Any>>
+    ) {
+        val guests = rsvps.map { (id, guest) ->
+            val pollData = pollResponses[id]
+            val dietary = pollData?.get("dietaryChoice") as? String ?: guest.dietaryChoice
+            val music = pollData?.get("musicChoice") as? String ?: guest.musicChoice
+            guest.copy(dietaryChoice = dietary, musicChoice = music)
+        }
+
         guestList.clear()
-        guestList.addAll(guestMap.values)
+        guestList.addAll(guests)
         attendeeCountText.text = "Attendees: ${guestList.count { it.status == "going" }}"
         guestAdapter.notifyDataSetChanged()
-    }
-
-    private fun isOfflineEvent(): Boolean {
-        // Offline if the event is not synced to Firestore
-        return event is EventEntity && !(event as EventEntity).isSynced
     }
 }

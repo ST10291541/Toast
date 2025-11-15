@@ -137,9 +137,9 @@ class MyEventsActivity : AppCompatActivity() {
                         )
                     }
 
-                    // Remove any offline events that have the same ID as online events
-                    val offlineIds = offlineEvents.map { it.id }
-                    val mergedEvents = (offlineEvents + onlineEvents)
+                    // Merge offline + online, preferring online events (they have the correct ID)
+                    // Put online events first so they're kept when using distinctBy
+                    val mergedEvents = (onlineEvents + offlineEvents)
                         .distinctBy { it.id.removePrefix("offline_") } // treat offline ID as same if online exists
 
                     eventsList.clear()
@@ -183,9 +183,17 @@ class MyEventsActivity : AppCompatActivity() {
                 )
             }
 
+            // Update guest map - use the actual event ID (without prefix)
             eventGuestMap[event.id!!] = guestMap.values.toList()
+            // Also update with "offline_" prefix if an event with that prefix exists
+            val eventWithPrefix = eventsList.find { it.id.removePrefix("offline_") == event.id }
+            if (eventWithPrefix != null && eventWithPrefix.id != event.id) {
+                eventGuestMap[eventWithPrefix.id] = guestMap.values.toList()
+            }
+
             val goingCount = guestMap.values.count { it.status.equals("going", ignoreCase = true) }
-            eventsList.find { it.id == event.id }?.attendeeCount = goingCount
+            // Update attendee count - check both with and without prefix
+            eventsList.find { it.id == event.id || it.id.removePrefix("offline_") == event.id }?.attendeeCount = goingCount
 
             adapter.updateData(eventsList, eventGuestMap)
             updateEventsCount()
