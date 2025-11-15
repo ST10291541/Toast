@@ -51,15 +51,6 @@ class ConnectivityReceiver(val context: Context) {
         }
     }
 
-    // Clean up if activity/service stops
-    fun stopObserving() {
-        try {
-            cm.unregisterNetworkCallback(networkCallback)
-        } catch (e: Exception) {
-            // Already unregistered or never registered
-        }
-    }
-
     // Stronger online check
     private fun isOnline(): Boolean {
         val network = cm.activeNetwork ?: return false
