@@ -43,7 +43,7 @@ class EventAdapter(
             tvEventDescription.text = event.description
             tvEventCategory.text = event.category
 
-            // 🔹 Get attendees for this event
+            //  Get attendees for this event
             val guests = eventGuestMap[event.id] ?: emptyList()
             val goingCount = guests.count { it.status == "going" }
             tvAttendeeCount.text = goingCount.toString()
@@ -70,8 +70,10 @@ class EventAdapter(
                 layoutGoogleDrive.visibility = View.GONE
             }
 
-            // 🔹 Share event button logic - KEEPING YOUR ORIGINAL FUNCTIONALITY
-            val shareLink = "https://toastapi-dqjl.onrender.com/api/events/share/${event.id}"
+            //  Share event button logic - KEEPING YOUR ORIGINAL FUNCTIONALITY
+            // Strip offline_ prefix if present
+            val actualId = event.id.removePrefix("offline_")
+            val shareLink = "https://toastapi-dqjl.onrender.com/api/events/share/$actualId"
             btnShareEvent.setOnClickListener {
                 val shareIntent = Intent().apply {
                     action = Intent.ACTION_SEND
@@ -87,7 +89,7 @@ class EventAdapter(
                 itemView.context.startActivity(Intent.createChooser(shareIntent, "Share event via"))
             }
 
-            // 🔹 Handle item click for event details
+            //  Handle item click for event details
             itemView.setOnClickListener {
                 onItemClick(event)
             }
