@@ -14,6 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import vcmsa.projects.toastapplication.local.EventRepo
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -180,47 +184,70 @@ class DashboardActivity : AppCompatActivity() {
         val db = FirebaseFirestore.getInstance()
         val currentUserId = auth.currentUser?.uid ?: return
 
-        db.collection("events")
-            .whereEqualTo("hostUserId", currentUserId)
-            .get()
-            .addOnSuccessListener { result ->
-                allEvents = result.documents.map { doc ->
-                    Event(
-                        id = doc.id,
-                        title = doc.getString("title") ?: "",
-                        description = doc.getString("description") ?: "",
-                        date = doc.getString("date") ?: "",
-                        time = doc.getString("time") ?: "",
-                        location = doc.getString("location") ?: "",
-                        category = doc.getString("category") ?: "",
-                        createdAt = doc.getString("createdAt") ?: "",
-                        hostEmail = doc.getString("hostEmail") ?: "",
-                        hostUserId = doc.getString("hostUserId") ?: "",
-                        attendeeCount = (doc.getLong("attendeeCount") ?: 0).toInt(),
-                        googleDriveLink = doc.getString("googleDriveLink") ?: "",
-                        dietaryRequirements = doc.get("dietaryRequirements") as? List<String> ?: emptyList(),
-                        musicSuggestions = doc.get("musicSuggestions") as? List<String> ?: emptyList(),
-                        pollResponses = doc.get("pollResponses") as? Map<String, Any> ?: emptyMap()
-                    )
-                }
+        // Clear previous lists
+        allEvents = emptyList()
+        filteredEvents.clear()
+        eventGuestMap.clear()
 
+        // Step 1: Load offline events first
+        CoroutineScope(Dispatchers.IO).launch {
+            val offlineEvents = getOfflineEvents().map { it.copy(id = "offline_${it.id}") }
+
+            runOnUiThread {
+                allEvents = offlineEvents
                 filteredEvents.clear()
                 filteredEvents.addAll(allEvents)
                 eventAdapter.updateData(filteredEvents, eventGuestMap)
                 updateEventCount()
+            }
 
-                // Load RSVP guest data for each event
-                loadGuestDataForEvents()
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, getString(R.string.failed_to_load_events, exception.message ?: ""), Toast.LENGTH_LONG).show()
-            }
+            // Step 2: Fetch online events from Firestore
+            db.collection("events")
+                .whereEqualTo("hostUserId", currentUserId)
+                .get()
+                .addOnSuccessListener { result ->
+                    val onlineEvents = result.documents.map { doc ->
+                        Event(
+                            id = doc.id,
+                            title = doc.getString("title") ?: "",
+                            description = doc.getString("description") ?: "",
+                            date = doc.getString("date") ?: "",
+                            time = doc.getString("time") ?: "",
+                            location = doc.getString("location") ?: "",
+                            category = doc.getString("category") ?: "",
+                            createdAt = doc.getString("createdAt") ?: "",
+                            hostEmail = doc.getString("hostEmail") ?: "",
+                            hostUserId = doc.getString("hostUserId") ?: "",
+                            attendeeCount = (doc.getLong("attendeeCount") ?: 0).toInt(),
+                            googleDriveLink = doc.getString("googleDriveLink") ?: "",
+                            dietaryRequirements = doc.get("dietaryRequirements") as? List<String> ?: emptyList(),
+                            musicSuggestions = doc.get("musicSuggestions") as? List<String> ?: emptyList(),
+                            pollResponses = doc.get("pollResponses") as? Map<String, Any> ?: emptyMap()
+                        )
+                    }
+
+                    // Merge offline + online, avoiding duplicates
+                    val mergedEvents = (offlineEvents + onlineEvents)
+                        .distinctBy { it.id.removePrefix("offline_") }
+
+                    allEvents = mergedEvents
+                    filteredEvents.clear()
+                    filteredEvents.addAll(mergedEvents)
+                    eventAdapter.updateData(filteredEvents, eventGuestMap)
+                    updateEventCount()
+
+                    // Load guest RSVPs for online events
+                    loadGuestDataForEvents(onlineEvents)
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(this@DashboardActivity, "Error loading events: ${exception.message}", Toast.LENGTH_LONG).show()
+                }
+        }
     }
 
-    private fun loadGuestDataForEvents() {
+    private fun loadGuestDataForEvents(events: List<Event>) {
         val db = FirebaseFirestore.getInstance()
-
-        for (event in allEvents) {
+        for (event in events) {
             db.collection("events").document(event.id).collection("rsvps")
                 .get()
                 .addOnSuccessListener { snapshot ->
@@ -228,12 +255,11 @@ class DashboardActivity : AppCompatActivity() {
                         Guest(
                             guestId = doc.id,
                             userName = doc.getString("userName") ?: "Anonymous",
-                            status = doc.getString("status") ?: getString(R.string.status_not_set),
-                            dietaryChoice = doc.getString("dietaryChoice") ?: getString(R.string.not_specified),
-                            musicChoice = doc.getString("musicChoice") ?: getString(R.string.not_specified)
+                            status = doc.getString("status") ?: "Not set",
+                            dietaryChoice = doc.getString("dietaryChoice") ?: "Not specified",
+                            musicChoice = doc.getString("musicChoice") ?: "Not specified"
                         )
                     }
-
                     eventGuestMap[event.id] = guests
                     eventAdapter.updateData(filteredEvents, eventGuestMap)
                     updateEventCount()
@@ -241,6 +267,29 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
+    // Example function to get offline events
+    private suspend fun getOfflineEvents(): List<Event> {
+        val eventEntities = EventRepo(this).getLocalEvents()
+        return eventEntities.map { entity ->
+            Event(
+                id = entity.id,
+                title = entity.title,
+                description = entity.description,
+                date = entity.date,
+                time = entity.time,
+                location = entity.location,
+                category = entity.category,
+                createdAt = entity.createdAt.toString(),
+                hostEmail = "",
+                hostUserId = entity.hostUserId,
+                attendeeCount = 0,
+                googleDriveLink = entity.googleDriveLink,
+                dietaryRequirements = entity.dietaryRequirements.split(","),
+                musicSuggestions = entity.musicSuggestions.split(","),
+                pollResponses = emptyMap()
+            )
+        }
+    }
     private fun filterEventsByCategory(category: String) {
         filteredEvents.clear()
         if (category == "All") {

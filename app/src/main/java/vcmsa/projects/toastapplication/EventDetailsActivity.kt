@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
+import vcmsa.projects.toastapplication.local.EventEntity
 
 class EventDetailsActivity : AppCompatActivity() {
 
@@ -95,6 +96,14 @@ class EventDetailsActivity : AppCompatActivity() {
     }
 
     private fun loadGuestsAndPreferences() {
+        if (isOfflineEvent()) {
+            // Offline: show only local event info, skip RSVPs
+            guestList.clear()
+            attendeeCountText.text = "Attendees: 0"
+            guestAdapter.notifyDataSetChanged()
+            return
+        }
+
         val evId = event?.id ?: return
         val rsvpsRef = db.collection("events").document(evId).collection("rsvps")
         val eventRef = db.collection("events").document(evId)
@@ -109,7 +118,6 @@ class EventDetailsActivity : AppCompatActivity() {
                 if (rsvpError != null || rsvpSnapshot == null) return@addSnapshotListener
 
                 val guests = mutableListOf<Guest>()
-
                 for (rsvpDoc in rsvpSnapshot.documents) {
                     val guestId = rsvpDoc.id
                     val userName = rsvpDoc.getString("userName") ?: "Anonymous"
@@ -130,11 +138,15 @@ class EventDetailsActivity : AppCompatActivity() {
         }
     }
 
-
     private fun updateGuestList(guestMap: Map<String, Guest>) {
         guestList.clear()
         guestList.addAll(guestMap.values)
         attendeeCountText.text = "Attendees: ${guestList.count { it.status == "going" }}"
         guestAdapter.notifyDataSetChanged()
+    }
+
+    private fun isOfflineEvent(): Boolean {
+        // Offline if the event is not synced to Firestore
+        return event is EventEntity && !(event as EventEntity).isSynced
     }
 }

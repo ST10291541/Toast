@@ -48,7 +48,8 @@ class EventRepo(context: Context) {
             docRef.set(eventData).await()
 
             // Mark as synced
-            eventDao.update(event.copy(isSynced = true))
+            val syncedEvent = event.copy(isSynced = true)
+            eventDao.update(syncedEvent)
         }
     }
 }

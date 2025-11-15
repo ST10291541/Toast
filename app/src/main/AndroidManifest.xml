@@ -67,8 +67,12 @@
             </intent-filter>
         </service>
 
-
-
+        <receiver android:name=".local.ConnectivityReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
 
     </application>
 
