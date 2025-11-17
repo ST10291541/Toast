@@ -1,22 +1,32 @@
 package vcmsa.projects.toastapplication
 
 import android.app.Activity
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
@@ -36,7 +46,7 @@ class MyEventsActivity : AppCompatActivity() {
     private lateinit var adapter: EventAdapter
     private val eventGuestMap = mutableMapOf<String, List<Guest>>()
     private val guestListeners = mutableMapOf<String, ListenerRegistration>()
-    private var shouldRefreshEvents = false
+    private val rsvpListeners = mutableMapOf<String, ListenerRegistration>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +74,9 @@ class MyEventsActivity : AppCompatActivity() {
         )
         eventsRecyclerView.adapter = adapter
 
+        // Start listening for RSVPs to user's events
+        setupRsvpNotifications()
+
         // Sync offline events first if online, then refresh events
         syncOfflineEventsAndLoad()
 
@@ -78,7 +91,169 @@ class MyEventsActivity : AppCompatActivity() {
 
         // Handle dynamic links
         handleDynamicLinks()
+
+        requestNotificationPermission()
     }
+
+    // ========== SIMPLE RSVP NOTIFICATION SYSTEM ==========
+
+    private fun setupRsvpNotifications() {
+        val currentUserId = auth.currentUser?.uid ?: return
+
+        // Listen for all events where current user is host
+        db.collection("events")
+            .whereEqualTo("hostUserId", currentUserId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.e("RSVPNotifications", "Error listening to events: ${error.message}")
+                    return@addSnapshotListener
+                }
+
+                // Set up listeners for each event's RSVPs
+                snapshot?.documents?.forEach { doc ->
+                    val eventId = doc.id
+                    setupRsvpListenerForEvent(eventId)
+                }
+
+                // Clean up listeners for events user no longer hosts
+                cleanupRsvpListeners(snapshot?.documents?.map { it.id } ?: emptyList())
+            }
+    }
+
+    private fun setupRsvpListenerForEvent(eventId: String) {
+        // Remove existing listener if any
+        rsvpListeners[eventId]?.remove()
+
+        val listener = db.collection("events").document(eventId)
+            .collection("rsvps")
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) return@addSnapshotListener
+
+                snapshot.documentChanges.forEach { change ->
+                    if (change.type == DocumentChange.Type.ADDED) {
+                        // New RSVP detected!
+                        val guestName = change.document.getString("userName") ?: "Someone"
+                        val rsvpStatus = change.document.getString("status") ?: "going"
+
+                        Log.d("RSVPNotifications", "New RSVP: $guestName is $rsvpStatus for event $eventId")
+
+                        // Get event title for the notification
+                        db.collection("events").document(eventId).get()
+                            .addOnSuccessListener { eventDoc ->
+                                val eventTitle = eventDoc.getString("title") ?: "Your Event"
+                                showSimpleNotification(guestName, rsvpStatus, eventTitle)
+                            }
+                            .addOnFailureListener {
+                                // If we can't get event title, show generic notification
+                                showSimpleNotification(guestName, rsvpStatus, "Your Event")
+                            }
+                    }
+                }
+            }
+
+        rsvpListeners[eventId] = listener
+    }
+
+    private fun cleanupRsvpListeners(currentEventIds: List<String>) {
+        rsvpListeners.keys.filter { !currentEventIds.contains(it) }.forEach { eventId ->
+            rsvpListeners[eventId]?.remove()
+            rsvpListeners.remove(eventId)
+        }
+    }
+
+    private fun showSimpleNotification(guestName: String, rsvpStatus: String, eventTitle: String) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "rsvp_notifications"
+
+        // Create notification channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "RSVP Notifications",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifications when guests RSVP to your events"
+                enableVibration(true)
+                setShowBadge(true)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Create intent to open the app
+        val intent = Intent(this, MyEventsActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        // Build simple notification
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("🎉 New RSVP for $eventTitle!")
+            .setContentText("$guestName is $rsvpStatus")
+            .setSmallIcon(R.drawable.toast_logo)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        // Show notification
+        val notificationId = System.currentTimeMillis().toInt()
+        notificationManager.notify(notificationId, notification)
+
+        Log.d("RSVPNotification", "Notification shown: $guestName is $rsvpStatus")
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED) {
+
+                // Show a rationale dialog first for better UX
+                if (shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
+                    AlertDialog.Builder(this)
+                        .setTitle("Notification Permission")
+                        .setMessage("This app needs notification permission to alert you when guests RSVP to your events.")
+                        .setPositiveButton("OK") { _, _ ->
+                            requestPermissions(
+                                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                                123
+                            )
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .show()
+                } else {
+                    requestPermissions(
+                        arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                        123
+                    )
+                }
+            }
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 123) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("Notifications", "Notification permission granted")
+            } else {
+                Log.d("Notifications", "Notification permission denied")
+            }
+        }
+    }
+
+    // ========== EXISTING CODE (UNCHANGED) ==========
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -89,7 +264,8 @@ class MyEventsActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        guestListeners.values.forEach { it.remove() } // remove all listeners
+        guestListeners.values.forEach { it.remove() } // remove all guest listeners
+        rsvpListeners.values.forEach { it.remove() } // remove all RSVP listeners
     }
 
     private fun loadEvents() {
@@ -283,6 +459,7 @@ class MyEventsActivity : AppCompatActivity() {
             )
         }
     }
+
     private fun syncOfflineEventsAndLoad() {
         if (!isOnline()) {
             // If offline, still try to load events (might have cached data)
