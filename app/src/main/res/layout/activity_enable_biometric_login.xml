@@ -54,9 +54,7 @@
         app:boxCornerRadiusBottomEnd="12dp"
         app:boxBackgroundColor="#FFFFFF"
         app:boxStrokeColor="#E0E0E0"
-        app:hintTextColor="#666666"
-
-        app:startIconTint="#666666">
+        app:hintTextColor="#666666">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/username"
@@ -81,8 +79,6 @@
         app:boxBackgroundColor="#FFFFFF"
         app:boxStrokeColor="#E0E0E0"
         app:hintTextColor="#666666"
-
-        app:startIconTint="#666666"
         app:passwordToggleEnabled="true"
         app:passwordToggleTint="#666666">
 

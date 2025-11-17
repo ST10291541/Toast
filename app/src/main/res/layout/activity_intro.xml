@@ -15,8 +15,8 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/imageSlider"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="16dp" />
+            android:layout_height="280dp"
+            android:layout_marginTop="32dp" />
 
         <!-- Title -->
         <TextView

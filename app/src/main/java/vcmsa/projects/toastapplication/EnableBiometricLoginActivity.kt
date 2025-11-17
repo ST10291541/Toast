@@ -4,11 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.lifecycle.Observer
 import com.google.firebase.auth.FirebaseAuth
 import vcmsa.projects.toastapplication.databinding.ActivityEnableBiometricLoginBinding
 
@@ -51,7 +49,11 @@ class EnableBiometricLoginActivity : AppCompatActivity() {
     }
 
     private fun showBiometricPromptForEncryption() {
-        val canAuthenticate = BiometricManager.from(applicationContext).canAuthenticate()
+        val biometricManager = BiometricManager.from(this)
+        val canAuthenticate = biometricManager.canAuthenticate(
+            BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+        )
+
         if (canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS) {
             cryptographyManager = CryptographyManager()
             val cipher = cryptographyManager.getInitializedCipherForEncryption(SECRET_KEY_NAME)
@@ -60,7 +62,8 @@ class EnableBiometricLoginActivity : AppCompatActivity() {
             val promptInfo = BiometricPromptUtils.createPromptInfo(this)
             biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
         } else {
-            Toast.makeText(this, "Biometric authentication not available", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Biometric authentication not available", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -82,5 +85,11 @@ class EnableBiometricLoginActivity : AppCompatActivity() {
             }
         }
         finish()
+    }
+
+    companion object {
+        private const val SHARED_PREFS_FILENAME = "biometric_prefs"
+        private const val CIPHERTEXT_WRAPPER = "ciphertext_wrapper"
+        private const val SECRET_KEY_NAME = "biometric_key"
     }
 }

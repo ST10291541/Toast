@@ -18,6 +18,7 @@ class IntroActivity : AppCompatActivity() {
         setContentView(R.layout.activity_intro)
 
         imageSlider = findViewById(R.id.imageSlider)
+        val btnNext = findViewById<Button>(R.id.btnNext)
 
         // Images to show in the slider
         val images = listOf(
@@ -41,7 +42,6 @@ class IntroActivity : AppCompatActivity() {
         handler.post(runnable)
 
         // Next button
-        val btnNext = findViewById<Button>(R.id.btnNext)
         btnNext.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()

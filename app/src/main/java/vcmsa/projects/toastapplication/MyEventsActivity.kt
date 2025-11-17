@@ -13,16 +13,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.dynamiclinks.ktx.dynamicLinks
@@ -33,15 +29,14 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import vcmsa.projects.toastapplication.databinding.ActivityMyEventsBinding
 import vcmsa.projects.toastapplication.local.EventRepo
 
 class MyEventsActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMyEventsBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private lateinit var eventsRecyclerView: RecyclerView
-    private lateinit var emptyState: View
-    private lateinit var tvEventsCount: TextView
     private val eventsList = mutableListOf<Event>()
     private lateinit var adapter: EventAdapter
     private val eventGuestMap = mutableMapOf<String, List<Guest>>()
@@ -51,18 +46,16 @@ class MyEventsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_my_events)
+
+        // Initialize binding
+        binding = ActivityMyEventsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // Initialize views
-        eventsRecyclerView = findViewById(R.id.eventsRecyclerView)
-        emptyState = findViewById(R.id.emptyState)
-        tvEventsCount = findViewById(R.id.tvEventsCount)
-
         // RecyclerView setup
-        eventsRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.eventsRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter = EventAdapter(
             eventList = eventsList,
             onItemClick = { event ->
@@ -72,7 +65,7 @@ class MyEventsActivity : AppCompatActivity() {
             },
             eventGuestMap = eventGuestMap
         )
-        eventsRecyclerView.adapter = adapter
+        binding.eventsRecyclerView.adapter = adapter
 
         // Start listening for RSVPs to user's events
         setupRsvpNotifications()
@@ -81,13 +74,13 @@ class MyEventsActivity : AppCompatActivity() {
         syncOfflineEventsAndLoad()
 
         // FAB to create events
-        findViewById<FloatingActionButton>(R.id.fabCreateEvent).setOnClickListener {
+        binding.fabCreateEvent.setOnClickListener {
             val intent = Intent(this, CreateEventActivity::class.java)
             startActivityForResult(intent, CREATE_EVENT_REQUEST)
         }
 
         // Back button
-        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
+        binding.btnBack.setOnClickListener { finish() }
 
         // Handle dynamic links
         handleDynamicLinks()
@@ -237,7 +230,6 @@ class MyEventsActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -253,7 +245,7 @@ class MyEventsActivity : AppCompatActivity() {
         }
     }
 
-    // ========== EXISTING CODE (UNCHANGED) ==========
+    // ========== EXISTING CODE (UPDATED WITH VIEW BINDING) ==========
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -379,21 +371,17 @@ class MyEventsActivity : AppCompatActivity() {
     }
 
     private fun updateEventsCount() {
-        tvEventsCount.text = "All Events (${eventsList.size})"
+        binding.tvEventsCount.text = "All Events (${eventsList.size})"
     }
 
     private fun updateEmptyState() {
         if (eventsList.isEmpty()) {
-            emptyState.visibility = View.VISIBLE
-            eventsRecyclerView.visibility = View.GONE
+            binding.emptyState.visibility = android.view.View.VISIBLE
+            binding.eventsRecyclerView.visibility = android.view.View.GONE
         } else {
-            emptyState.visibility = View.GONE
-            eventsRecyclerView.visibility = View.VISIBLE
+            binding.emptyState.visibility = android.view.View.GONE
+            binding.eventsRecyclerView.visibility = android.view.View.VISIBLE
         }
-    }
-
-    fun onCreateEventClick(view: View) {
-        startActivity(Intent(this, CreateEventActivity::class.java))
     }
 
     private fun handleDynamicLinks() {

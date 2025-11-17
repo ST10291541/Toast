@@ -1,41 +1,21 @@
 package vcmsa.projects.toastapplication
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import vcmsa.projects.toastapplication.databinding.ActivityEventDetailsBinding
 import vcmsa.projects.toastapplication.local.EventEntity
 
 class EventDetailsActivity : AppCompatActivity() {
 
-    private lateinit var eventTitle: TextView
-    private lateinit var eventDate: TextView
-    private lateinit var eventTime: TextView
-    private lateinit var eventLocation: TextView
-    private lateinit var aboutDescription: TextView
-    private lateinit var categoryText: TextView
-    private lateinit var attendeeCountText: TextView
-    private lateinit var btnGoogleDrive: Button
-    private lateinit var btnBack: ImageButton
-    private lateinit var guestsRecyclerView: RecyclerView
-
+    private lateinit var binding: ActivityEventDetailsBinding
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
     private var event: Any? = null // can be Event or EventEntity
@@ -45,14 +25,16 @@ class EventDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_event_details)
 
-        initViews()
-        btnBack.setOnClickListener { finish() }
+        // Initialize binding
+        binding = ActivityEventDetailsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.btnBack.setOnClickListener { finish() }
 
         guestAdapter = GuestAdapter(guestList)
-        guestsRecyclerView.layoutManager = LinearLayoutManager(this)
-        guestsRecyclerView.adapter = guestAdapter
+        binding.guestsRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.guestsRecyclerView.adapter = guestAdapter
 
         val eventFromIntent = intent.getSerializableExtra("event")
         if (eventFromIntent == null) {
@@ -70,19 +52,6 @@ class EventDetailsActivity : AppCompatActivity() {
             // Check if event has been synced to Firestore and load latest data
             checkAndLoadSyncedEvent(eventId)
         }
-    }
-
-    private fun initViews() {
-        eventTitle = findViewById(R.id.eventTitle)
-        eventDate = findViewById(R.id.eventDate)
-        eventTime = findViewById(R.id.eventTime)
-        eventLocation = findViewById(R.id.eventLocation)
-        aboutDescription = findViewById(R.id.aboutDescription)
-        categoryText = findViewById(R.id.categoryText)
-        attendeeCountText = findViewById(R.id.attendeeCount)
-        btnGoogleDrive = findViewById(R.id.btnGoogleDrive)
-        btnBack = findViewById(R.id.btnBack)
-        guestsRecyclerView = findViewById(R.id.guestsRecyclerView)
     }
 
     private fun bindEventData() {
@@ -129,17 +98,27 @@ class EventDetailsActivity : AppCompatActivity() {
             else -> null
         }
 
-        eventTitle.text = evTitle
-        aboutDescription.text = evDescription
-        eventDate.text = "Date: $evDate"
-        eventTime.text = "Start: $evTime"
-        eventLocation.text = "Location: $evLocation"
-        categoryText.text = "Category: $evCategory"
+        binding.eventTitle.text = evTitle
+        binding.aboutDescription.text = evDescription
+        binding.eventDate.text = evDate
+        binding.eventTime.text = evTime
+        binding.eventLocation.text = evLocation
+        binding.categoryText.text = evCategory
 
+        // Update attendee count
+        val attendeeCount = when (event) {
+            is Event -> (event as Event).attendeeCount
+            is EventEntity -> 0 // Offline events don't have attendee count
+            else -> 0
+        }
+        binding.attendeeCount.text = "$attendeeCount attendees"
+
+        // Update guest count
+        binding.guestCount.text = "${guestList.size} guests"
+
+        // Setup Google Drive button
         if (!evGoogleDrive.isNullOrBlank()) {
-            btnGoogleDrive.text = "Open Google Drive Folder"
-            btnGoogleDrive.isEnabled = true
-            btnGoogleDrive.setOnClickListener {
+            binding.btnGoogleDrive.setOnClickListener {
                 try {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(evGoogleDrive)))
                 } catch (e: Exception) {
@@ -147,8 +126,8 @@ class EventDetailsActivity : AppCompatActivity() {
                 }
             }
         } else {
-            btnGoogleDrive.text = "No Google Drive link available"
-            btnGoogleDrive.isEnabled = false
+            binding.btnGoogleDrive.isEnabled = false
+            binding.btnGoogleDrive.alpha = 0.5f
         }
     }
 
@@ -257,7 +236,12 @@ class EventDetailsActivity : AppCompatActivity() {
 
         guestList.clear()
         guestList.addAll(guests)
-        attendeeCountText.text = "Attendees: ${guestList.count { it.status == "going" }}"
+
+        // Update attendee and guest counts
+        val goingCount = guestList.count { it.status.equals("going", ignoreCase = true) }
+        binding.attendeeCount.text = "$goingCount attendees"
+        binding.guestCount.text = "${guestList.size} guests"
+
         guestAdapter.notifyDataSetChanged()
     }
 }

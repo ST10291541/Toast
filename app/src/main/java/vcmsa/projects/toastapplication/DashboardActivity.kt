@@ -1,16 +1,15 @@
 package vcmsa.projects.toastapplication
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,18 +17,14 @@ import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import vcmsa.projects.toastapplication.databinding.ActivityDashboardBinding
 import vcmsa.projects.toastapplication.local.EventRepo
-import android.content.Context
-import android.net.ConnectivityManager
 
 class DashboardActivity : AppCompatActivity() {
 
-    private lateinit var tvUserName: TextView
-    private lateinit var tvEventCount: TextView
-    private lateinit var imgProfile: ImageView
+    private lateinit var binding: ActivityDashboardBinding
     private lateinit var auth: FirebaseAuth
 
-    private lateinit var eventsRecyclerView: RecyclerView
     private lateinit var eventAdapter: EventAdapter
 
     private var allEvents: MutableList<Event> = mutableListOf()
@@ -40,10 +35,13 @@ class DashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_dashboard)
 
-        val bottomNav = findViewById<LinearLayout>(R.id.bottomNav)
-        ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { view, insets ->
+        // Initialize binding
+        binding = ActivityDashboardBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Handle window insets
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNav) { view, insets ->
             view.setPadding(
                 view.paddingLeft,
                 view.paddingTop,
@@ -54,71 +52,36 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         auth = FirebaseAuth.getInstance()
-        tvUserName = findViewById(R.id.tvUserName)
-        tvEventCount = findViewById(R.id.tvEventCount)
-        imgProfile = findViewById(R.id.imgProfile)
 
-        val db = FirebaseFirestore.getInstance()
-
-        //  Load user profile info
-        auth.currentUser?.let { user ->
-            val userId = user.uid
-            val userDocRef = db.collection("users").document(userId)
-
-            userDocRef.get().addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    val firstName = document.getString("firstName")
-                    val profileImageUrl = document.getString("profileImageUri")
-
-                    tvUserName.text = firstName ?: user.email ?: getString(R.string.user_fallback)
-
-                    if (!profileImageUrl.isNullOrEmpty()) {
-                        Glide.with(this).load(profileImageUrl).circleCrop().into(imgProfile)
-                    } else {
-                        user.photoUrl?.let {
-                            Glide.with(this).load(it).circleCrop().into(imgProfile)
-                        }
-                    }
-                } else {
-                    tvUserName.text = user.email ?: getString(R.string.user_fallback)
-                    user.photoUrl?.let {
-                        Glide.with(this).load(it).circleCrop().into(imgProfile)
-                    }
-                }
-            }.addOnFailureListener {
-                tvUserName.text = user.email ?: getString(R.string.user_fallback)
-                user.photoUrl?.let {
-                    Glide.with(this).load(it).circleCrop().into(imgProfile)
-                }
-            }
-        } ?: run {
-            tvUserName.text = getString(R.string.guest)
-        }
+        // Load user profile info
+        loadUserProfile()
 
         // Navigation buttons
-        findViewById<LinearLayout>(R.id.navHome).setOnClickListener {
-            startActivity(Intent(this, DashboardActivity::class.java))
+        binding.navHome.setOnClickListener {
+            // Already on dashboard, do nothing or refresh
+            refreshUserProfile()
+            syncOfflineEventsAndLoad()
         }
-        findViewById<LinearLayout>(R.id.navEvents).setOnClickListener {
+        binding.navEvents.setOnClickListener {
             startActivity(Intent(this, MyEventsActivity::class.java))
         }
-        findViewById<LinearLayout>(R.id.navProfile).setOnClickListener {
+        binding.navProfile.setOnClickListener {
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
         }
 
-        findViewById<LinearLayout>(R.id.btnCreateEvent).setOnClickListener {
+        // Action buttons
+        binding.btnCreateEvent.setOnClickListener {
             startActivity(Intent(this, CreateEventActivity::class.java))
         }
-        findViewById<LinearLayout>(R.id.btnMyEvents).setOnClickListener {
+        binding.btnMyEvents.setOnClickListener {
             startActivity(Intent(this, MyEventsActivity::class.java))
         }
-        findViewById<LinearLayout>(R.id.btnMyProfile).setOnClickListener {
+        binding.btnMyProfile.setOnClickListener {
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
         }
 
         // RecyclerView setup
-        eventsRecyclerView = findViewById(R.id.recyclerEvents)
-        eventsRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerEvents.layoutManager = LinearLayoutManager(this)
 
         eventAdapter = EventAdapter(
             eventList = filteredEvents,
@@ -129,15 +92,15 @@ class DashboardActivity : AppCompatActivity() {
             },
             eventGuestMap = eventGuestMap
         )
-        eventsRecyclerView.adapter = eventAdapter
+        binding.recyclerEvents.adapter = eventAdapter
 
         // Category filters
-        findViewById<LinearLayout>(R.id.chipWedding).setOnClickListener { filterEventsByCategory("Wedding") }
-        findViewById<LinearLayout>(R.id.chipParty).setOnClickListener { filterEventsByCategory("Party") }
-        findViewById<LinearLayout>(R.id.chipFood).setOnClickListener { filterEventsByCategory("Food") }
-        findViewById<LinearLayout>(R.id.chipArt).setOnClickListener { filterEventsByCategory("Art") }
-        findViewById<LinearLayout>(R.id.chipMeet).setOnClickListener { filterEventsByCategory("Meet-Up") }
-        findViewById<LinearLayout>(R.id.chipGeneral).setOnClickListener { filterEventsByCategory("General") }
+        binding.chipWedding.setOnClickListener { filterEventsByCategory("Wedding") }
+        binding.chipParty.setOnClickListener { filterEventsByCategory("Party") }
+        binding.chipFood.setOnClickListener { filterEventsByCategory("Food") }
+        binding.chipArt.setOnClickListener { filterEventsByCategory("Art") }
+        binding.chipMeet.setOnClickListener { filterEventsByCategory("Meet-Up") }
+        binding.chipGeneral.setOnClickListener { filterEventsByCategory("General") }
 
         // Sync offline events first if online, then load events
         syncOfflineEventsAndLoad()
@@ -155,6 +118,43 @@ class DashboardActivity : AppCompatActivity() {
         guestListeners.values.forEach { it.remove() } // remove all listeners
     }
 
+    private fun loadUserProfile() {
+        val db = FirebaseFirestore.getInstance()
+        auth.currentUser?.let { user ->
+            val userId = user.uid
+            val userDocRef = db.collection("users").document(userId)
+
+            userDocRef.get().addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val firstName = document.getString("firstName")
+                    val profileImageUrl = document.getString("profileImageUri")
+
+                    binding.tvUserName.text = firstName ?: user.email ?: getString(R.string.user_fallback)
+
+                    if (!profileImageUrl.isNullOrEmpty()) {
+                        Glide.with(this).load(profileImageUrl).circleCrop().into(binding.imgProfile)
+                    } else {
+                        user.photoUrl?.let {
+                            Glide.with(this).load(it).circleCrop().into(binding.imgProfile)
+                        }
+                    }
+                } else {
+                    binding.tvUserName.text = user.email ?: getString(R.string.user_fallback)
+                    user.photoUrl?.let {
+                        Glide.with(this).load(it).circleCrop().into(binding.imgProfile)
+                    }
+                }
+            }.addOnFailureListener {
+                binding.tvUserName.text = user.email ?: getString(R.string.user_fallback)
+                user.photoUrl?.let {
+                    Glide.with(this).load(it).circleCrop().into(binding.imgProfile)
+                }
+            }
+        } ?: run {
+            binding.tvUserName.text = getString(R.string.guest)
+        }
+    }
+
     private fun refreshUserProfile() {
         val db = FirebaseFirestore.getInstance()
         auth.currentUser?.let { user ->
@@ -165,26 +165,26 @@ class DashboardActivity : AppCompatActivity() {
                         val firstName = document.getString("firstName")
                         val profileImageUrl = document.getString("profileImageUri")
 
-                        tvUserName.text = firstName ?: user.email ?: "User"
+                        binding.tvUserName.text = firstName ?: user.email ?: "User"
 
                         if (!profileImageUrl.isNullOrEmpty()) {
-                            Glide.with(this).load(profileImageUrl).circleCrop().into(imgProfile)
+                            Glide.with(this).load(profileImageUrl).circleCrop().into(binding.imgProfile)
                         } else {
                             user.photoUrl?.let {
-                                Glide.with(this).load(it).circleCrop().into(imgProfile)
+                                Glide.with(this).load(it).circleCrop().into(binding.imgProfile)
                             }
                         }
                     } else {
-                        tvUserName.text = user.email ?: "User"
+                        binding.tvUserName.text = user.email ?: "User"
                         user.photoUrl?.let {
-                            Glide.with(this).load(it).circleCrop().into(imgProfile)
+                            Glide.with(this).load(it).circleCrop().into(binding.imgProfile)
                         }
                     }
                 }
                 .addOnFailureListener {
-                    tvUserName.text = user.email ?: "User"
+                    binding.tvUserName.text = user.email ?: "User"
                     user.photoUrl?.let {
-                        Glide.with(this).load(it).circleCrop().into(imgProfile)
+                        Glide.with(this).load(it).circleCrop().into(binding.imgProfile)
                     }
                 }
         }
@@ -297,10 +297,10 @@ class DashboardActivity : AppCompatActivity() {
 
             // Calculate and update attendee count (count guests with status "going")
             val goingCount = guestMap.values.count { it.status.equals("going", ignoreCase = true) }
-            
+
             // Update attendee count in allEvents list - check both with and without prefix
             allEvents.find { it.id == event.id || it.id.removePrefix("offline_") == event.id }?.attendeeCount = goingCount
-            
+
             // Update attendee count in filteredEvents list - check both with and without prefix
             filteredEvents.find { it.id == event.id || it.id.removePrefix("offline_") == event.id }?.attendeeCount = goingCount
 
@@ -335,6 +335,7 @@ class DashboardActivity : AppCompatActivity() {
             )
         }
     }
+
     private fun filterEventsByCategory(category: String) {
         filteredEvents.clear()
         if (category == "All") {
@@ -349,7 +350,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun updateEventCount() {
         val count = filteredEvents.size
-        tvEventCount.text = "(${count} ${if (count == 1) "event" else "events"})"
+        binding.tvEventCount.text = "(${count} ${if (count == 1) "event" else "events"})"
     }
 
     private fun syncOfflineEventsAndLoad() {

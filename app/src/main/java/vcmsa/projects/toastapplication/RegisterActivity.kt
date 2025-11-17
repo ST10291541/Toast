@@ -2,9 +2,6 @@ package vcmsa.projects.toastapplication
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,9 +13,11 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import vcmsa.projects.toastapplication.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -26,22 +25,29 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_register)
 
-        auth = FirebaseAuth.getInstance()
+        // Initialize binding
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        val etEmail = findViewById<EditText>(R.id.etEmail)
-        val etPassword = findViewById<EditText>(R.id.etPassword)
-        val btnDone = findViewById<Button>(R.id.btnDone)
-        val tvCancel = findViewById<TextView>(R.id.tvCancel)
-        val tvAlreadyHaveAccount = findViewById<TextView>(R.id.tvAlreadyHaveAccount)
+        setupClickListeners()
 
-        btnDone.setOnClickListener {
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
+        // Google Sign-In options
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+    }
+
+    private fun setupClickListeners() {
+        binding.btnDone.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show()
@@ -76,30 +82,18 @@ class RegisterActivity : AppCompatActivity() {
                 }
         }
 
-        tvCancel.setOnClickListener {
+        binding.tvCancel.setOnClickListener {
             finish() // Go back to previous screen
         }
 
-        tvAlreadyHaveAccount.setOnClickListener {
+        binding.tvAlreadyHaveAccount.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
 
-        // Google Sign-In options
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)) // from google-services.json
-            .requestEmail()
-            .build()
-
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        findViewById<com.google.android.gms.common.SignInButton>(R.id.btnGoogle)
-            .setOnClickListener { signInWithGoogle() }
-
-        findViewById<TextView>(R.id.tvAlreadyHaveAccount).setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
+        binding.btnGoogle.setOnClickListener {
+            signInWithGoogle()
         }
     }
 

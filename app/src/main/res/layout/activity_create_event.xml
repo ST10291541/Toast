@@ -99,9 +99,7 @@
             app:boxCornerRadiusBottomEnd="12dp"
             app:boxBackgroundColor="#FFFFFF"
             app:boxStrokeColor="#E0E0E0"
-            app:hintTextColor="#666666"
-            android:focusable="false"
-            android:clickable="false">
+            app:hintTextColor="#666666">
 
             <AutoCompleteTextView
                 android:id="@+id/eventCategory"
@@ -109,8 +107,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Event Category"
                 android:padding="16dp"
-                android:textSize="16sp"
-                android:focusable="false" />
+                android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Date and Time Row -->

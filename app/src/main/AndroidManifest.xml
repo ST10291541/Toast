@@ -20,6 +20,10 @@
         android:roundIcon="@drawable/toast_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.ToastApplication">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
         <activity
             android:name=".CreateEventActivity"
             android:exported="false" />
@@ -47,7 +51,8 @@
         <activity android:name=".LoginActivity" /> <!-- Intro Screen -->
         <activity
             android:name=".IntroActivity"
-            android:exported="false" /> <!-- Splash Screen is the launcher -->
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -57,8 +62,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".MainActivity" android:exported="false" />
 
     </application>
 
