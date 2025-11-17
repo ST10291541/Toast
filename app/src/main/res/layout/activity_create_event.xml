@@ -1,154 +1,346 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="#F8F9FA">
 
     <LinearLayout
         android:id="@+id/contentLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
-        <!-- Back Button -->
+        <!-- Header with Back Button -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginBottom="24dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginBottom="32dp">
 
             <ImageButton
                 android:id="@+id/btnBack"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/circle_white_bg"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/back"
-                android:src="@drawable/ic_arrow_back" />
+                android:src="@drawable/ic_arrow_back"
+                app:tint="#333333" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Create New Event"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:gravity="center"
+                android:layout_marginEnd="48dp"/>
         </LinearLayout>
 
         <!-- Event Name -->
-        <EditText
-            android:id="@+id/eventName"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/event_name_hint"
-            android:background="@drawable/edittext_bg"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E0E0E0"
+            app:hintTextColor="#666666">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eventName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/event_name_hint"
+                android:padding="16dp"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Event Description -->
-        <EditText
-            android:id="@+id/eventDescription"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_event_description"
-            android:background="@drawable/edittext_bg"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E0E0E0"
+            app:hintTextColor="#666666">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eventDescription"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:hint="@string/enter_event_description"
+                android:padding="16dp"
+                android:gravity="top"
+                android:textSize="16sp"
+                android:inputType="textMultiLine" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Event Category -->
-        <Spinner
-            android:id="@+id/eventCategory"
-            android:layout_width="match_parent"
-            android:layout_height="53dp"
-            android:layout_marginBottom="24dp" />
-
-        <!-- Date Picker -->
-        <Button
-            android:id="@+id/btnPickDate"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pick_date"
-            android:drawableStart="@drawable/ic_calendar"
-            android:backgroundTint="@color/black"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E0E0E0"
+            app:hintTextColor="#666666"
+            android:focusable="false"
+            android:clickable="false">
 
-        <!-- Time Picker -->
-        <Button
-            android:id="@+id/btnPickTime"
+            <AutoCompleteTextView
+                android:id="@+id/eventCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Event Category"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:focusable="false" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Date and Time Row -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pick_time"
-            android:drawableStart="@drawable/ic_time"
-            android:backgroundTint="@color/black"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="16dp" />
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
 
-        <!-- Location -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/location_label"
-            android:drawableStart="@drawable/ic_location"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            <!-- Date Picker -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#FFFFFF">
 
-        <EditText
-            android:id="@+id/eventLocation"
+                <LinearLayout
+                    android:id="@+id/btnPickDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_calendar"
+                        app:tint="#2196F3" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/pick_date"
+                        android:textSize="14sp"
+                        android:textColor="#333333"
+                        android:layout_marginStart="12dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Time Picker -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#FFFFFF">
+
+                <LinearLayout
+                    android:id="@+id/btnPickTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_time"
+                        app:tint="#4CAF50" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/pick_time"
+                        android:textSize="14sp"
+                        android:textColor="#333333"
+                        android:layout_marginStart="12dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- Location Section -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_location"
-            android:background="@drawable/edittext_bg"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp"
+            app:startIconDrawable="@drawable/ic_location"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E0E0E0"
+            app:hintTextColor="#666666">
 
-        <!-- Dietary Specifications -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eventLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_location"
+                android:padding="16dp"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Dietary Specifications Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/dietary_requirements"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            android:textColor="#333333"
+            android:layout_marginBottom="12dp" />
 
-        <EditText
-            android:id="@+id/diet1"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/requirement_1"
-            android:background="@drawable/edittext_bg"
-            android:padding="16dp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E0E0E0"
+            app:hintTextColor="#666666">
 
-        <EditText
-            android:id="@+id/diet2"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/diet1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/requirement_1"
+                android:padding="16dp"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/requirement_2"
-            android:background="@drawable/edittext_bg"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E0E0E0"
+            app:hintTextColor="#666666">
 
-        <!-- Music Poll -->
-        <CheckBox
-            android:id="@+id/musicPollCheckbox"
-            android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/diet2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/requirement_2"
+                android:padding="16dp"
+                android:textSize="16sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Music Poll Checkbox -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/music_suggestions"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#FFFFFF">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+
+                <CheckBox
+                    android:id="@+id/musicPollCheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#2196F3" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/music_suggestions"
+                    android:textSize="16sp"
+                    android:textColor="#333333"
+                    android:layout_marginStart="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Google Drive Link -->
-        <EditText
-            android:id="@+id/googleDriveLink"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/insert_google_drive_link"
-            android:background="@drawable/edittext_bg"
-            android:padding="16dp"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="32dp"
+            app:startIconDrawable="@drawable/ic_link"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxStrokeColor="#E0E0E0"
+            app:hintTextColor="#666666">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/googleDriveLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/insert_google_drive_link"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:inputType="textUri" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Create Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCreateEvent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="@string/create_event"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@android:color/holo_blue_light"
-            android:textAllCaps="true"
-            android:layout_marginBottom="16dp" />
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="12dp"
+            app:backgroundTint="@color/gold"
+            android:layout_marginBottom="16dp"
+            android:elevation="4dp" />
+
     </LinearLayout>
 </ScrollView>

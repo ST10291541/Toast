@@ -85,7 +85,7 @@
                         android:layout_gravity="bottom|end"
                         android:layout_margin="4dp"
                         android:contentDescription="Edit picture"
-                        app:backgroundTint="#C8A951"
+                        app:backgroundTint="@color/gold"
                         app:srcCompat="@drawable/ic_edit"
                         app:tint="@android:color/white"
                         app:fabSize="mini"/>
@@ -141,7 +141,7 @@
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 app:cornerRadius="12dp"
-                app:backgroundTint="#C8A951"/>
+                app:backgroundTint="@color/gold"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/changePasswordBtn"
@@ -152,7 +152,7 @@
                 android:textAllCaps="false"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 app:cornerRadius="12dp"
-                android:textColor="#C8A951"/>
+                android:textColor="@color/gold"/>
 
             <!-- Language Section -->
             <TextView
